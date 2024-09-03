@@ -1,8 +1,12 @@
 import request from 'supertest';
 import status from 'http-status';
 import { server } from '../../../index';
+import mongoose from 'mongoose';
 
-afterAll(async () => server.close());
+afterAll(async () => {
+  await server.close();
+  await mongoose.disconnect();
+});
 
 describe('Create Todo', () => {
   it('should create todo successfully with valid name', async () => {
