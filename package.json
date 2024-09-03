@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon",
-    "test": "NODE_ENV=test jest --runInBand --testTimeout=30000 --watch --detectOpenHandles"
+    "test": "NODE_ENV=test jest --runInBand --testTimeout=30000",
+    "test:watch": "NODE_ENV=test jest --runInBand --testTimeout=30000 --watch --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
