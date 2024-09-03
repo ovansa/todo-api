@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import express, { Application } from 'express';
+import morgan from 'morgan';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import errorResponse from './middleware/error';
@@ -15,6 +16,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(morgan('common'));
 
 const server = app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
@@ -27,3 +29,5 @@ mongoose.connection.on(`error`, (error: Error) => console.log(error));
 app.use('/', router());
 
 app.use(errorResponse);
+
+export { server };
