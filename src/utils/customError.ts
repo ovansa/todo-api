@@ -8,15 +8,21 @@ class CustomError extends Error {
   }
 }
 
-export class TodoNameRequiredError extends CustomError {
+export class TodoTitleRequiredError extends CustomError {
   constructor() {
-    super('Todo name is required.', 400);
+    super('Todo title is required.', 400);
   }
 }
 
 export class TodoNotFoundError extends CustomError {
   constructor() {
-    super('Todo not found.', 400);
+    super('Todo not found.', 404);
+  }
+}
+
+export class RequestDataCannotBeEmptyError extends CustomError {
+  constructor() {
+    super('Request data cannot be empty.', 400);
   }
 }
 

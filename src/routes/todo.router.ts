@@ -1,8 +1,13 @@
-import { addTodo, getTodos, getTodoById } from '../controllers/todo.controller';
+import {
+  addTodo,
+  getTodos,
+  getTodoById,
+  updateTodo,
+  deleteTodo,
+} from '../controllers/todo.controller';
 import express from 'express';
 
-export default (router: express.Router) => {
-  router.post('/todo', addTodo);
-  router.get('/todo', getTodos);
-  router.get('/todo/:id', getTodoById);
+export default (router: express.Router): void => {
+  router.route('/todo').post(addTodo).get(getTodos);
+  router.route('/todo/:id').get(getTodoById).put(updateTodo).delete(deleteTodo);
 };

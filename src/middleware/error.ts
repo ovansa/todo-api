@@ -10,6 +10,11 @@ const errorResponse = (
   let error = { ...err };
   error.message = err.message;
 
+  if (err.name === 'CastError') {
+    const message = 'Invalid ID format.';
+    error = new CustomError(message, 400);
+  }
+
   res.status(error.statusCode || 500).json({
     success: false,
     error: error.message || 'Server error.',

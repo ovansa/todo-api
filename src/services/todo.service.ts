@@ -1,9 +1,12 @@
 import { Service } from 'typedi';
 
 import Todo, { ITodo } from '../models/todo.model';
+import { TodoStatus } from '../constants';
 
 interface TodoInput {
-  name: string;
+  title: string;
+  description?: string;
+  status?: TodoStatus;
 }
 
 @Service()
@@ -16,24 +19,20 @@ export class TodoService {
     return Todo.findById(todoId);
   }
 
-  public async fetchAllTodos(): Promise<ITodo[]> {
-    return Todo.find();
+  public async fetchAllTodos(
+    query: any = {},
+    sort: any = {},
+    skip = 0,
+    limit = 10
+  ): Promise<ITodo[]> {
+    return Todo.find(query).sort(sort).skip(skip).limit(limit).exec();
+  }
+
+  public async deleteTodoById(todoId: string): Promise<ITodo | null> {
+    return Todo.findByIdAndDelete(todoId);
+  }
+
+  public async updateTodo(todoId: string, values: TodoInput): Promise<ITodo> {
+    return Todo.findByIdAndUpdate(todoId, values);
   }
 }
-
-// export default TodoModel = mongoose.model('Todo', TodoSchema);
-
-// export const addNewTodo = (todoDetails: Record<string, any>) =>
-//   new TodoModel(todoDetails).save().then((savedTodo) => savedTodo.toObject());
-
-// export const removeTodoById = (todoId: string) =>
-//   TodoModel.findByIdAndDelete(todoId);
-
-// export const fetchAllTodos = () => TodoModel.find();
-
-// export const fetchTodoById = (todoId: string) => TodoModel.findById(todoId);
-
-// export const modifyTodoById = (
-//   todoId: string,
-//   updatedValues: Record<string, any>
-// ) => TodoModel.findByIdAndUpdate(todoId, updatedValues);
