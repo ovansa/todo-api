@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import errorResponse from './middleware/error';
 
 import router from './routes';
+import logger from './utils/logger';
 
 const MONGO_URL = `mongodb://localhost:27017/todo-api`;
 const app: Application = express();
@@ -16,15 +17,17 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(morgan('common'));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('combined'));
+}
 
 const server = app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+  logger.info('Server running on http://localhost:3000.');
 });
 
 mongoose.Promise = Promise;
-mongoose.connect(MONGO_URL).then(() => console.log('DB Connected'));
-mongoose.connection.on(`error`, (error: Error) => console.log(error));
+mongoose.connect(MONGO_URL).then(() => logger.info('DB Connected.'));
+mongoose.connection.on(`error`, (error: Error) => logger.error(error));
 
 app.use('/', router());
 

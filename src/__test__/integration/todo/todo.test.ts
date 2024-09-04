@@ -45,8 +45,6 @@ describe('Todo API Integration Tests', () => {
       };
       const res = await request(server).post('/todo').send(requestBody);
 
-      console.log(res.body);
-
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
       expect(res.body.success).toBe(false);
       expect(res.body.error).toBe('Todo title is required.');
@@ -151,8 +149,6 @@ describe('Todo API Integration Tests', () => {
 
     it.skip('should return 200 and a todo with all properties', async () => {
       const res = await request(server).get(`/todo/${todoId}`);
-
-      console.log(res.body);
 
       expect(res.statusCode).toEqual(status.OK);
       // expect(res.body).toHaveProperty('_id', todoId);
