@@ -13,7 +13,6 @@ dotenv.config();
 
 const MONGO_DEFAULT = `mongodb://localhost:27017/todo-api`;
 let MONGO_URL = process.env.MONGO_URL || MONGO_DEFAULT;
-logger.info(`process ${process.env.MONGO_URL}`);
 const app: Application = express();
 
 app.use(
