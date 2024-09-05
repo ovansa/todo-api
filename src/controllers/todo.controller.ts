@@ -9,6 +9,7 @@ import {
 } from '../utils/customError';
 import { TodoStatus } from '../constants';
 import { ITodo } from '../models/todo.model';
+import httpStatus from 'http-status';
 
 const todoService = Container.get(TodoService);
 
@@ -27,7 +28,7 @@ export const addTodo = asyncHandler(
     };
 
     const todo = await todoService.addNewTodo(todoData);
-    return res.status(201).json({ success: true, todo });
+    return res.status(httpStatus.CREATED).json({ success: true, todo });
   }
 );
 
@@ -54,7 +55,7 @@ export const getTodos = asyncHandler(
       skip,
       limitValue
     );
-    return res.status(200).json(todos).end();
+    return res.status(httpStatus.OK).json(todos).end();
   }
 );
 
@@ -67,7 +68,7 @@ export const getTodoById = asyncHandler(
       return next(new TodoNotFoundError());
     }
 
-    return res.status(200).json(todo).end();
+    return res.status(httpStatus.OK).json(todo).end();
   }
 );
 
@@ -82,8 +83,8 @@ export const deleteTodo = asyncHandler(
     }
 
     return res
-      .status(200)
-      .json({ success: true, message: 'Todo deleted successfully' });
+      .status(httpStatus.OK)
+      .json({ success: true, message: 'Todo successfully deleted.' });
   }
 );
 
@@ -108,7 +109,7 @@ export const updateTodo = asyncHandler(
       return next(new TodoNotFoundError());
     }
 
-    return res.status(200).json({
+    return res.status(httpStatus.OK).json({
       success: true,
       message: 'Todo updated successfully',
       data: updatedTodo,
