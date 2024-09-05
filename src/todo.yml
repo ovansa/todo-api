@@ -1,0 +1,139 @@
+openapi: '3.0.3'
+info:
+  title: Todos API
+  description: A simple todo app
+  version: '1.0'
+servers:
+  - url: http://localhost:3000
+paths:
+  /todo/:todoId:
+    get:
+      description: Get information about a specific todo
+      parameters:
+        - in: path
+          schema:
+            $ref: '#/components/schemas/todoId'
+          name: todoId
+          description: Id of the todo
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo'
+    put:
+      description: Updates the information for the specified todo
+      parameters:
+        - in: path
+          schema:
+            $ref: '#/components/schemas/todoId'
+          name: todoId
+          description: Id of the todo
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/todo'
+            examples:
+              todo:
+                value:
+                  title: 'Do something'
+                  description: 'Do something more'
+                  status: 'draft'
+
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo'
+    delete:
+      description: Deletes the specified todo
+      parameters:
+        - in: path
+          schema:
+            $ref: '#/components/schemas/todoId'
+          name: todoId
+          description: Id of the todo
+          required: true
+      responses:
+        '200':
+          description: Todo successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Todo successfully deleted'
+
+  /todo:
+    get:
+      description: Get all todo
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todos'
+    post:
+      description: Create a new todo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/todo'
+            examples:
+              todo:
+                value:
+                  title: 'Finish project'
+                  description: 'Complete the project for client X'
+                  status: 'draft'
+              todo2:
+                value:
+                  title: Do something
+      responses:
+        '201':
+          description: Todo successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'Invalid request data'
+
+components:
+  schemas:
+    todo:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+    todoId:
+      type: string
+    todos:
+      type: array
+      items:
+        $ref: '#/components/schemas/todo'
