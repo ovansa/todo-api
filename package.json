@@ -4,7 +4,8 @@
   "description": "Basic Todo Api",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=development nodemon",
+    "dev": "NODE_ENV=development nodemon",
+    "start": "NODE_ENV=production ts-node src/index.ts",
     "test": "NODE_ENV=test jest --runInBand --testTimeout=30000 --detectOpenHandles",
     "test:ci": "NODE_ENV=test jest --runInBand --testTimeout=30000",
     "test:watch": "NODE_ENV=test jest --runInBand --testTimeout=30000 --watch --detectOpenHandles"
@@ -31,6 +32,7 @@
   "dependencies": {
     "compression": "^1.7.4",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "luxon": "^3.5.0",
     "mongoose": "^8.6.0",
