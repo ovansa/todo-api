@@ -10,6 +10,7 @@ on:
 
 jobs:
   be_test:
+    name: BE Tests
     runs-on: ubuntu-latest
 
     steps:
