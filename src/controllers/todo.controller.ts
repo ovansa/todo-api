@@ -8,7 +8,7 @@ import {
   RequestDataCannotBeEmptyError,
 } from '../utils/customError';
 import { TodoStatus } from '../constants';
-import { ITodo } from '../models/todo.model';
+import { ITodoRequest } from '../models/todo.model';
 import httpStatus from 'http-status';
 
 const todoService = Container.get(TodoService);
@@ -21,7 +21,7 @@ export const addTodo = asyncHandler(
       return next(new TodoTitleRequiredError());
     }
 
-    const todoData: ITodo = {
+    const todoData: ITodoRequest = {
       title,
       ...(description && { description }),
       ...(status in TodoStatus && { status }),
@@ -63,7 +63,6 @@ export const getTodoById = asyncHandler(
   async (req: express.Request, res: express.Response, next: NextFunction) => {
     const { id } = req.params;
     const todo = await todoService.fetchTodoById(id);
-
     if (!todo) {
       return next(new TodoNotFoundError());
     }
@@ -76,8 +75,12 @@ export const deleteTodo = asyncHandler(
   async (req: express.Request, res: express.Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const deletedTodo = await todoService.deleteTodoById(id);
+    const todo = await todoService.fetchTodoById(id);
+    if (!todo) {
+      return next(new TodoNotFoundError());
+    }
 
+    const deletedTodo = await todoService.deleteTodoById(id);
     if (!deletedTodo) {
       return next(new TodoNotFoundError());
     }
@@ -92,6 +95,11 @@ export const updateTodo = asyncHandler(
   async (req: express.Request, res: express.Response, next: NextFunction) => {
     const { id } = req.params;
     const { title, description, status } = req.body;
+
+    const todo = await todoService.fetchTodoById(id);
+    if (!todo) {
+      return next(new TodoNotFoundError());
+    }
 
     const todoData = {
       ...(title && { title }),
@@ -111,7 +119,7 @@ export const updateTodo = asyncHandler(
 
     return res.status(httpStatus.OK).json({
       success: true,
-      message: 'Todo updated successfully',
+      message: 'Todo updated successfully.',
       data: updatedTodo,
     });
   }

@@ -1,10 +1,18 @@
 import { TodoStatus } from '../constants';
 import mongoose from 'mongoose';
 
-export interface ITodo {
+export interface ITodoRequest {
   title: string;
   description?: string;
   status?: TodoStatus;
+}
+
+export interface ITodo extends mongoose.Document {
+  title: string;
+  description?: string;
+  status: TodoStatus;
+  createdAt: Date;
+  updatedAt: Date;
   // created_by: mongoose.Schema.Types.ObjectId;
 }
 

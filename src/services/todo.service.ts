@@ -33,6 +33,6 @@ export class TodoService {
   }
 
   public async updateTodo(todoId: string, values: TodoInput): Promise<ITodo> {
-    return Todo.findByIdAndUpdate(todoId, values);
+    return Todo.findByIdAndUpdate(todoId, values, { new: true });
   }
 }
