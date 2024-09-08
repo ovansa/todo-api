@@ -17,8 +17,6 @@ afterAll(async () => {
 });
 
 describe('Todo API Integration Tests', () => {
-  let todoId: string;
-
   describe('POST /todos', () => {
     it('should create a new todo with valid data', async () => {
       const requestBody: ITodoRequest = {
