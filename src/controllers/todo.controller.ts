@@ -6,6 +6,7 @@ import {
   TodoTitleRequiredError,
   TodoNotFoundError,
   RequestDataCannotBeEmptyError,
+  UnauthorizedError,
 } from '../utils/customError';
 import { TodoStatus } from '../constants';
 import { ITodoRequest } from '../models/todo.model';
@@ -21,10 +22,14 @@ export const addTodo = asyncHandler(
       return next(new TodoTitleRequiredError());
     }
 
+    const userId = req.user._id;
+    if (!userId) return next(new UnauthorizedError());
+
     const todoData: ITodoRequest = {
       title,
       ...(description && { description }),
       ...(status in TodoStatus && { status }),
+      createdBy: String(userId),
     };
 
     const todo = await todoService.addNewTodo(todoData);

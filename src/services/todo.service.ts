@@ -12,7 +12,7 @@ interface TodoInput {
 @Service()
 export class TodoService {
   public async addNewTodo(values: TodoInput): Promise<ITodo> {
-    return Todo.create(values);
+    return await Todo.create(values);
   }
 
   public async fetchTodoById(todoId: string): Promise<ITodo> {
@@ -25,7 +25,12 @@ export class TodoService {
     skip = 0,
     limit = 10
   ): Promise<ITodo[]> {
-    return Todo.find(query).sort(sort).skip(skip).limit(limit).exec();
+    return Todo.find(query)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .lean<ITodo[]>()
+      .exec();
   }
 
   public async deleteTodoById(todoId: string): Promise<ITodo | null> {

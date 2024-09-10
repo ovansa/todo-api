@@ -8,6 +8,18 @@ class CustomError extends Error {
   }
 }
 
+export class EmailInUseError extends CustomError {
+  constructor() {
+    super('Email address is already taken', 400);
+  }
+}
+
+export class InvalidEmailPasswordError extends CustomError {
+  constructor() {
+    super('Invalid email or password', 401);
+  }
+}
+
 export class TodoTitleRequiredError extends CustomError {
   constructor() {
     super('Todo title is required.', 400);
@@ -23,6 +35,12 @@ export class TodoNotFoundError extends CustomError {
 export class RequestDataCannotBeEmptyError extends CustomError {
   constructor() {
     super('Request data cannot be empty.', 400);
+  }
+}
+
+export class UnauthorizedError extends CustomError {
+  constructor() {
+    super('Not authorized | Not found', 401);
   }
 }
 

@@ -1,3 +1,4 @@
+import protect from '../middleware/authenticate';
 import {
   addTodo,
   getTodos,
@@ -8,6 +9,6 @@ import {
 import express from 'express';
 
 export default (router: express.Router): void => {
-  router.route('/todo').post(addTodo).get(getTodos);
+  router.route('/todo').post(protect, addTodo).get(protect, getTodos);
   router.route('/todo/:id').get(getTodoById).put(updateTodo).delete(deleteTodo);
 };

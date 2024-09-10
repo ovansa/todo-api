@@ -4,7 +4,12 @@ import { server } from '../../../index';
 import mongoose from 'mongoose';
 import Todo, { ITodo, ITodoRequest } from '../../../models/todo.model';
 import { TodoStatus } from '../../../constants';
-import { clearDatabase, connectTestMongoDb } from '../../helpers';
+import {
+  clearDatabase,
+  connectTestMongoDb,
+  disconnectTestMongoDb,
+  loginUser,
+} from '../../helpers';
 import { createDocument } from '../../data';
 
 beforeAll(() => connectTestMongoDb());
@@ -14,16 +19,23 @@ beforeEach(async () => clearDatabase());
 afterAll(async () => {
   await server.close();
   await mongoose.disconnect();
+  await disconnectTestMongoDb();
 });
 
 describe('Todo API Integration Tests', () => {
-  describe('POST /todos', () => {
+  describe.only('POST /todos', () => {
     it('should create a new todo with valid data', async () => {
+      const { userOne } = await createDocument();
+      const token = await loginUser(userOne, server);
       const requestBody: ITodoRequest = {
         title: 'Test Todo',
         description: 'This is a test todo',
       };
-      const res = await request(server).post('/todo').send(requestBody);
+
+      const res = await request(server)
+        .post('/todo')
+        .send(requestBody)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.CREATED);
       expect(res.body.todo).toHaveProperty('_id');
@@ -32,10 +44,15 @@ describe('Todo API Integration Tests', () => {
     });
 
     it('should create a new todo with only a title', async () => {
+      const { userOne } = await createDocument();
+      const token = await loginUser(userOne, server);
       const requestBody: ITodoRequest = {
         title: 'Title Only Todo',
       };
-      const res = await request(server).post('/todo').send(requestBody);
+      const res = await request(server)
+        .post('/todo')
+        .send(requestBody)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.CREATED);
       expect(res.body.todo).toHaveProperty('_id');
@@ -44,10 +61,15 @@ describe('Todo API Integration Tests', () => {
     });
 
     it('should return a 400 error when title is missing', async () => {
+      const { userOne } = await createDocument();
+      const token = await loginUser(userOne, server);
       const requestBody = {
         description: 'No title provided',
       };
-      const res = await request(server).post('/todo').send(requestBody);
+      const res = await request(server)
+        .post('/todo')
+        .send(requestBody)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
       expect(res.body.success).toBe(false);
@@ -55,11 +77,16 @@ describe('Todo API Integration Tests', () => {
     });
 
     it('should return a 400 error when title is empty', async () => {
+      const { userOne } = await createDocument();
+      const token = await loginUser(userOne, server);
       const requestBody: ITodoRequest = {
         title: '',
         description: 'Empty title',
       };
-      const res = await request(server).post('/todo').send(requestBody);
+      const res = await request(server)
+        .post('/todo')
+        .send(requestBody)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
       expect(res.body.success).toBe(false);
@@ -67,12 +94,17 @@ describe('Todo API Integration Tests', () => {
     });
 
     it('should ignore additional unexpected fields', async () => {
+      const { userOne } = await createDocument();
+      const token = await loginUser(userOne, server);
       const requestBody: any = {
         title: 'Test Todo with Extras',
         description: 'This is a test todo',
         extraField: 'This should be ignored',
       };
-      const res = await request(server).post('/todo').send(requestBody);
+      const res = await request(server)
+        .post('/todo')
+        .send(requestBody)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.CREATED);
       expect(res.body.todo).toHaveProperty('_id');

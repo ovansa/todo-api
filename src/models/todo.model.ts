@@ -5,6 +5,7 @@ export interface ITodoRequest {
   title: string;
   description?: string;
   status?: TodoStatus;
+  createdBy?: string;
 }
 
 export interface ITodo extends mongoose.Document {
@@ -13,7 +14,7 @@ export interface ITodo extends mongoose.Document {
   status: TodoStatus;
   createdAt: Date;
   updatedAt: Date;
-  // created_by: mongoose.Schema.Types.ObjectId;
+  createdBy: mongoose.Schema.Types.ObjectId;
 }
 
 const TodoSchema = new mongoose.Schema(
@@ -25,13 +26,17 @@ const TodoSchema = new mongoose.Schema(
       enum: Object.values(TodoStatus),
       default: TodoStatus.DRAFT,
     },
+    createdBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model('Todo', TodoSchema);
+export default mongoose.model<ITodo>('Todo', TodoSchema);
 
 /**
  * username
