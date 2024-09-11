@@ -1,6 +1,7 @@
 import { Server } from 'http';
 import mongoose from 'mongoose';
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import log from '../utils/logger';
@@ -40,4 +41,17 @@ export const loginUser = async (
 
   const response = await request(server).post('/login').send(body);
   return response.body.token;
+};
+
+export const simulateLogin = (user: IUser): string => {
+  const payload = {
+    _id: user._id,
+    email: user.email,
+  };
+
+  const token = jwt.sign(payload, 'SOMETHING_SECRETIVE', {
+    expiresIn: 10,
+  });
+
+  return token;
 };

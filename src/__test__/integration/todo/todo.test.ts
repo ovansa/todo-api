@@ -9,6 +9,7 @@ import {
   connectTestMongoDb,
   disconnectTestMongoDb,
   loginUser,
+  simulateLogin,
 } from '../../helpers';
 import { createDocument } from '../../data';
 
@@ -24,9 +25,9 @@ afterAll(async () => {
 
 describe('Todo API Integration Tests', () => {
   describe.only('POST /todos', () => {
-    it('should create a new todo with valid data', async () => {
+    it.only('should create a new todo with valid data', async () => {
       const { userOne } = await createDocument();
-      const token = await loginUser(userOne, server);
+      const token = await simulateLogin(userOne);
       const requestBody: ITodoRequest = {
         title: 'Test Todo',
         description: 'This is a test todo',
