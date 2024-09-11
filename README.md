@@ -25,16 +25,16 @@ This is a Node.js-based Todo Application that manages tasks with CRUD operations
 
 ## Endpoints
 
-- `POST /todos`: Create a new todo.
-- `GET /todos`: Get a list of todos (admins can fetch all, users can fetch their own).
-- `PUT /todos/:id`: Update a specific todo (only the owner can update).
-- `DELETE /todos/:id`: Delete a specific todo (only the owner can delete).
+- `POST /todo`: Create a new todo.
+- `GET /todo`: Get a list of todos (admins can fetch all, users can fetch their own).
+- `PUT /todo/:id`: Update a specific todo (only the owner can update).
+- `DELETE /todo/:id`: Delete a specific todo (only the owner can delete).
 
 ## Setup Instructions
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/todo-app.git
+   git clone https://github.com/ovansa/todo-app.git
    ```
 2. Install dependencies:
    ```bash
@@ -44,6 +44,8 @@ This is a Node.js-based Todo Application that manages tasks with CRUD operations
    ```bash
    MONGO_URI=<your-mongo-db-uri>
    JWT_SECRET=<your-jwt-secret>
+   JWT_EXPIRE=<your-jwt-expire>
+   JWT_COOKIE_EXPIRE=<your-jwt-cookie-expire>
    ```
 4. Run the development server:
    ```bash

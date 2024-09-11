@@ -52,6 +52,7 @@
     "pino-pretty": "^11.2.2",
     "reflect-metadata": "^0.2.2",
     "typedi": "^0.10.0",
-    "validator": "^13.12.0"
+    "validator": "^13.12.0",
+    "yup": "^1.4.0"
   }
 }

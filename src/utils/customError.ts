@@ -10,13 +10,13 @@ class CustomError extends Error {
 
 export class EmailInUseError extends CustomError {
   constructor() {
-    super('Email address is already taken', 400);
+    super('Email address is already taken.', 400);
   }
 }
 
 export class InvalidEmailPasswordError extends CustomError {
   constructor() {
-    super('Invalid email or password', 401);
+    super('Invalid email or password.', 401);
   }
 }
 

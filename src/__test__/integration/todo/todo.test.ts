@@ -2,13 +2,12 @@ import request from 'supertest';
 import status from 'http-status';
 import { server } from '../../../index';
 import mongoose from 'mongoose';
-import Todo, { ITodo, ITodoRequest } from '../../../models/todo.model';
+import Todo, { ITodoRequest } from '../../../models/todo.model';
 import { TodoStatus } from '../../../constants';
 import {
   clearDatabase,
   connectTestMongoDb,
   disconnectTestMongoDb,
-  loginUser,
   simulateLogin,
 } from '../../helpers';
 import { createDocument } from '../../data';
