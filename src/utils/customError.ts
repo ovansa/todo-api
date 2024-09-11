@@ -38,6 +38,12 @@ export class RequestDataCannotBeEmptyError extends CustomError {
   }
 }
 
+export class ResourceNotFoundError extends CustomError {
+  constructor() {
+    super('Resource not found.', 404);
+  }
+}
+
 export class UnauthorizedError extends CustomError {
   constructor() {
     super('Not authorized | Not found', 401);
