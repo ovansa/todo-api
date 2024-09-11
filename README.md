@@ -1,7 +1,3 @@
-Here's the updated README with the user features included:
-
----
-
 # Todo Application
 
 This is a Node.js-based Todo Application that manages tasks with CRUD operations. The project uses TypeScript, MongoDB, Mongoose, and Express to create a robust backend API for handling todos, including features like user management, authentication, role-based access control, and filtering.
