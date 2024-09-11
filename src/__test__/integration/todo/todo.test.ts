@@ -23,8 +23,8 @@ afterAll(async () => {
   await disconnectTestMongoDb();
 });
 
-describe('Todo API Integration Tests', () => {
-  describe.only('POST /todos', () => {
+describe('Todo API Tests', () => {
+  describe('POST /todos', () => {
     it('should create a new todo with valid data', async () => {
       const { userOne } = await createDocument();
       const token = await simulateLogin(userOne);
@@ -122,9 +122,12 @@ describe('Todo API Integration Tests', () => {
 
   describe('GET /todos', () => {
     it('should fetch all todos', async () => {
-      await createDocument();
+      const { userOne } = await createDocument();
+      const token = await simulateLogin(userOne);
 
-      const res = await request(server).get('/todo');
+      const res = await request(server)
+        .get('/todo')
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(200);
       expect(res.body).toBeInstanceOf(Array);
@@ -133,9 +136,12 @@ describe('Todo API Integration Tests', () => {
 
     it('should fetch only todos with a specific status', async () => {
       const status = TodoStatus.DRAFT;
-      await createDocument();
+      const { userOne } = await createDocument();
+      const token = await simulateLogin(userOne);
 
-      const res = await request(server).get(`/todo?status=${status}`);
+      const res = await request(server)
+        .get(`/todo?status=${status}`)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(200);
       expect(res.body).toBeInstanceOf(Array);
@@ -146,13 +152,14 @@ describe('Todo API Integration Tests', () => {
     });
 
     it('should fetch todos with pagination', async () => {
-      await createDocument();
+      const { userOne } = await createDocument();
+      const token = await simulateLogin(userOne);
 
       const page = 1;
       const limit = 10;
-      const res = await request(server).get(
-        `/todo?page=${page}&limit=${limit}`
-      );
+      const res = await request(server)
+        .get(`/todo?page=${page}&limit=${limit}`)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(200);
       expect(res.body).toBeInstanceOf(Array);
@@ -160,8 +167,13 @@ describe('Todo API Integration Tests', () => {
     });
 
     it('should fetch only the top n todos', async () => {
+      const { userOne } = await createDocument();
+      const token = await simulateLogin(userOne);
+
       const limit = 5;
-      const res = await request(server).get(`/todo?limit=${limit}`);
+      const res = await request(server)
+        .get(`/todo?limit=${limit}`)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(200);
       expect(res.body).toBeInstanceOf(Array);
@@ -171,9 +183,12 @@ describe('Todo API Integration Tests', () => {
 
   describe('GET /todos/:id', () => {
     it('should fetch a todo by ID', async () => {
-      const { todoOne } = await createDocument();
+      const { todoOne, userOne } = await createDocument();
+      const token = await simulateLogin(userOne);
 
-      const res = await request(server).get(`/todo/${todoOne._id}`);
+      const res = await request(server)
+        .get(`/todo/${todoOne._id}`)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(200);
       expect(String(res.body._id)).toBe(String(todoOne._id));
@@ -182,40 +197,50 @@ describe('Todo API Integration Tests', () => {
     });
 
     it('should return 404 for a non-existent todo', async () => {
-      await createDocument();
-      const res = await request(server).get(
-        `/todo/${new mongoose.Types.ObjectId()}`
-      );
+      const { userOne } = await createDocument();
+      const token = await simulateLogin(userOne);
+
+      const res = await request(server)
+        .get(`/todo/${new mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.NOT_FOUND);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toBe('Todo not found.');
+      expect(res.body.error).toBe('Resource not found.');
     });
 
     it('should return 400 for an invalid ID format', async () => {
-      await createDocument();
-      const res = await request(server).get('/todo/invalid-id-format');
+      const { userOne } = await createDocument();
+      const token = await simulateLogin(userOne);
+
+      const res = await request(server)
+        .get('/todo/invalid-id-format')
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toBe('Invalid ID format.');
+      expect(res.body.error).toBe('Resource not found.');
     });
 
     it('should return 200 and a todo with all properties', async () => {
-      const { todoOne } = await createDocument();
-      const res = await request(server).get(`/todo/${todoOne._id}`);
+      const { userOne, todoOne } = await createDocument();
+      const token = await simulateLogin(userOne);
+
+      const res = await request(server)
+        .get(`/todo/${todoOne._id}`)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.OK);
       expect(res.body).toHaveProperty('title');
       expect(res.body).toHaveProperty('description');
       expect(res.body).toHaveProperty('status');
-      // expect(res.body).toHaveProperty('created_by');
     });
   });
 
   describe('PUT /todos/:id', () => {
     it('should update a todo by ID', async () => {
-      const { todoOne } = await createDocument();
+      const { userOne, todoOne } = await createDocument();
+      const token = await simulateLogin(userOne);
       const todoDataForUpdate = {
         title: 'Updated Test Todo',
         description: 'This is an updated test todo description',
@@ -223,7 +248,8 @@ describe('Todo API Integration Tests', () => {
 
       const res = await request(server)
         .put(`/todo/${todoOne._id}`)
-        .send(todoDataForUpdate);
+        .send(todoDataForUpdate)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.OK);
       expect(res.body.message).toBe('Todo updated successfully.');
@@ -232,6 +258,8 @@ describe('Todo API Integration Tests', () => {
 
     it('should return 404 if todo is not found', async () => {
       const invalidTodoId = new mongoose.Types.ObjectId();
+      const { userOne, todoOne } = await createDocument();
+      const token = await simulateLogin(userOne);
       const todoDataForUpdate = {
         title: 'Nonexistent Todo',
         description: 'This todo does not exist',
@@ -239,16 +267,21 @@ describe('Todo API Integration Tests', () => {
 
       const res = await request(server)
         .put(`/todo/${invalidTodoId}`)
-        .send(todoDataForUpdate);
+        .send(todoDataForUpdate)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.NOT_FOUND);
-      expect(res.body.error).toBe('Todo not found.');
+      expect(res.body.error).toBe('Resource not found.');
     });
 
     it('should not update a todo if no fields are provided', async () => {
-      const { todoOne } = await createDocument();
+      const { userOne, todoOne } = await createDocument();
+      const token = await simulateLogin(userOne);
 
-      const res = await request(server).put(`/todo/${todoOne._id}`).send({});
+      const res = await request(server)
+        .put(`/todo/${todoOne._id}`)
+        .send({})
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
       expect(res.body.error).toBe('Request data cannot be empty.');
@@ -257,9 +290,12 @@ describe('Todo API Integration Tests', () => {
 
   describe('DELETE /todos/:id', () => {
     it('should delete a todo by ID', async () => {
-      const { todoOne } = await createDocument();
+      const { userOne, todoOne } = await createDocument();
+      const token = await simulateLogin(userOne);
 
-      const res = await request(server).delete(`/todo/${todoOne._id}`);
+      const res = await request(server)
+        .delete(`/todo/${todoOne._id}`)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.OK);
       expect(res.body.success).toBeTruthy();
@@ -270,24 +306,31 @@ describe('Todo API Integration Tests', () => {
     });
 
     it('should return 404 if todo does not exist', async () => {
-      await createDocument();
+      const { userOne } = await createDocument();
+      const token = await simulateLogin(userOne);
       const nonExistentId = new mongoose.Types.ObjectId().toHexString();
 
-      const res = await request(server).delete(`/todo/${nonExistentId}`);
+      const res = await request(server)
+        .delete(`/todo/${nonExistentId}`)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.NOT_FOUND);
       expect(res.body.success).toBeFalsy();
-      expect(res.body.error).toBe('Todo not found.');
+      expect(res.body.error).toBe('Resource not found.');
     });
 
     it('should return 400 for invalid ID format', async () => {
       const invalidId = 'invalid_id';
+      const { userOne } = await createDocument();
+      const token = await simulateLogin(userOne);
 
-      const res = await request(server).delete(`/todo/${invalidId}`);
+      const res = await request(server)
+        .delete(`/todo/${invalidId}`)
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
       expect(res.body.success).toBeFalsy();
-      expect(res.body.error).toBe('Invalid ID format.');
+      expect(res.body.error).toBe('Resource not found.');
     });
   });
 });

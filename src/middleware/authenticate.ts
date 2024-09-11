@@ -6,34 +6,30 @@ import { UserService } from '../services/user.service';
 import { TokenPayload } from '../types/tokenPayload';
 import { resourceModelMapping, ResourceModels } from '../utils/resourceModel';
 import httpStatus from 'http-status';
+import asyncHandler from './async';
 
 const userService = Container.get(UserService);
 
-export const isOwner =
-  (resource: ResourceModels) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const resourceId = req.params.id;
-      const resourceModel = resourceModelMapping[resource];
+export const isOwner = (resource: ResourceModels) =>
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const resourceId = req.params.id;
+    const resourceModel = resourceModelMapping[resource];
 
-      if (!resourceModel) {
-        return res
-          .status(httpStatus.INTERNAL_SERVER_ERROR)
-          .json({ message: 'Invalid resource model' });
-      }
-
-      const resourceData = await resourceModel.findById(resourceId);
-      if (!resourceData) return next(new ResourceNotFoundError());
-
-      if (String(resourceData.createdBy) !== String(req.user._id)) {
-        return next(new ResourceNotFoundError());
-      }
-
-      next();
-    } catch (error) {
-      return res.status(500).json({ message: 'Server error' });
+    if (!resourceModel) {
+      return res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Invalid resource model' });
     }
-  };
+
+    const resourceData = await resourceModel.findById(resourceId);
+    if (!resourceData) return next(new ResourceNotFoundError());
+
+    if (String(resourceData.createdBy) !== String(req.user._id)) {
+      return next(new ResourceNotFoundError());
+    }
+
+    next();
+  });
 
 const protect = async (req: Request, res: Response, next: NextFunction) => {
   let token;

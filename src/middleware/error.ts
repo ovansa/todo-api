@@ -11,7 +11,8 @@ const errorResponse = (
   error.message = err.message;
 
   if (err.name === 'CastError') {
-    const message = 'Invalid ID format.';
+    // const message = 'Invalid ID format.';
+    const message = 'Resource not found.';
     error = new CustomError(message, 400);
   }
 

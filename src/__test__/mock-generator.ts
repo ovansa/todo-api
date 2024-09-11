@@ -13,6 +13,7 @@ export const generateTodo = (overrides?: Partial<ITodo>): ITodo => {
     status: TodoStatus.DRAFT,
     createdAt: new Date(),
     updatedAt: new Date(),
+    createdBy: String(new mongoose.Types.ObjectId()),
   } as ITodo;
 
   Object.entries(overrides || {}).forEach(([key, value]) => {

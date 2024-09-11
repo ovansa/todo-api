@@ -4,13 +4,13 @@ import User from '../models/user.model';
 import { generateTodo, generateUser } from './mock-generator';
 
 const createData = async () => {
-  const todoOne = generateTodo();
-  const todoTwo = generateTodo();
-  const todoThree = generateTodo();
-
   const userOne = generateUser();
   const userTwo = generateUser();
   const userThree = generateUser();
+
+  const todoOne = generateTodo({ createdBy: String(userOne._id) });
+  const todoTwo = generateTodo();
+  const todoThree = generateTodo();
 
   return {
     todoOne,

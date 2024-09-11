@@ -1,4 +1,4 @@
-import protect from '../middleware/authenticate';
+import protect, { isOwner } from '../middleware/authenticate';
 import {
   addTodo,
   getTodos,
@@ -7,8 +7,13 @@ import {
   deleteTodo,
 } from '../controllers/todo.controller';
 import express from 'express';
+import { ResourceModels } from '../utils/resourceModel';
 
 export default (router: express.Router): void => {
   router.route('/todo').post(protect, addTodo).get(protect, getTodos);
-  router.route('/todo/:id').get(getTodoById).put(updateTodo).delete(deleteTodo);
+  router
+    .route('/todo/:id')
+    .get(protect, isOwner(ResourceModels.Todo), getTodoById)
+    .put(protect, isOwner(ResourceModels.Todo), updateTodo)
+    .delete(protect, isOwner(ResourceModels.Todo), deleteTodo);
 };

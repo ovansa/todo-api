@@ -14,7 +14,7 @@ export interface ITodo extends mongoose.Document {
   status: TodoStatus;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: mongoose.Schema.Types.ObjectId;
+  createdBy: string;
 }
 
 const TodoSchema = new mongoose.Schema(

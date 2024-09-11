@@ -39,11 +39,21 @@ export const addTodo = asyncHandler(
 
 export const getTodos = asyncHandler(
   async (req: express.Request, res: express.Response) => {
-    const { status, sortBy, page = 1, limit = 10 } = req.query;
+    const {
+      status,
+      sortBy,
+      page = 1,
+      limit = 10,
+      createdByMe = true,
+    } = req.query;
 
     const query: any = {};
     if (status && String(status) in TodoStatus) {
       query.status = status;
+    }
+
+    if (createdByMe && req.user) {
+      query.createdBy = req.user._id;
     }
 
     const sort: any = {};
