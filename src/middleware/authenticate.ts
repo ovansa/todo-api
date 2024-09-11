@@ -9,7 +9,6 @@ const userService = Container.get(UserService);
 
 const protect = async (req: Request, res: Response, next: NextFunction) => {
   let token;
-  console.log(`token`, token);
 
   if (
     req.headers.authorization &&
@@ -17,10 +16,6 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
   ) {
     token = req.headers.authorization.split(' ')[1];
   }
-
-  console.log(`token auth`, req.headers.authorization);
-  console.log(`req header`, req.headers);
-  console.log(`token after`, token);
 
   if (!token) {
     return next(new UnauthorizedError());

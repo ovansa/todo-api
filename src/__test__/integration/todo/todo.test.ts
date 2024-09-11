@@ -25,9 +25,10 @@ afterAll(async () => {
 
 describe('Todo API Integration Tests', () => {
   describe.only('POST /todos', () => {
-    it.only('should create a new todo with valid data', async () => {
+    it('should create a new todo with valid data', async () => {
       const { userOne } = await createDocument();
       const token = await simulateLogin(userOne);
+
       const requestBody: ITodoRequest = {
         title: 'Test Todo',
         description: 'This is a test todo',
@@ -46,7 +47,8 @@ describe('Todo API Integration Tests', () => {
 
     it('should create a new todo with only a title', async () => {
       const { userOne } = await createDocument();
-      const token = await loginUser(userOne, server);
+      const token = await simulateLogin(userOne);
+
       const requestBody: ITodoRequest = {
         title: 'Title Only Todo',
       };
@@ -63,7 +65,8 @@ describe('Todo API Integration Tests', () => {
 
     it('should return a 400 error when title is missing', async () => {
       const { userOne } = await createDocument();
-      const token = await loginUser(userOne, server);
+      const token = await simulateLogin(userOne);
+
       const requestBody = {
         description: 'No title provided',
       };
@@ -79,7 +82,8 @@ describe('Todo API Integration Tests', () => {
 
     it('should return a 400 error when title is empty', async () => {
       const { userOne } = await createDocument();
-      const token = await loginUser(userOne, server);
+      const token = await simulateLogin(userOne);
+
       const requestBody: ITodoRequest = {
         title: '',
         description: 'Empty title',
@@ -96,7 +100,8 @@ describe('Todo API Integration Tests', () => {
 
     it('should ignore additional unexpected fields', async () => {
       const { userOne } = await createDocument();
-      const token = await loginUser(userOne, server);
+      const token = await simulateLogin(userOne);
+
       const requestBody: any = {
         title: 'Test Todo with Extras',
         description: 'This is a test todo',
