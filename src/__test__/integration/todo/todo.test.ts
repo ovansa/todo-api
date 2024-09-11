@@ -35,8 +35,8 @@ describe('Todo API Integration Tests', () => {
 
       const res = await request(server)
         .post('/todo')
-        .send(requestBody)
-        .set('Authorization', `Bearer ${token}`);
+        .set('Authorization', `Bearer ${token}`)
+        .send(requestBody);
 
       expect(res.statusCode).toEqual(status.CREATED);
       expect(res.body.todo).toHaveProperty('_id');
