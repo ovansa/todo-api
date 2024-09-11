@@ -19,6 +19,7 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   console.log(`token auth`, req.headers.authorization);
+  console.log(`req header`, req.headers);
   console.log(`token after`, token);
 
   if (!token) {
