@@ -9,6 +9,9 @@ import {
 } from '../utils/customError';
 import httpStatus from 'http-status';
 import { sendTokenResponse } from '../utils/tokenResponse';
+import { REDIS_KEYS } from '../utils/redisKeyManager';
+import { redisClient } from '../redis';
+import sanitizeUser from '../utils/sanitizeUser';
 
 const userService = Container.get(UserService);
 
@@ -42,6 +45,10 @@ export const loginUser = asyncHandler(
     const isMatch = await user.matchPassword(password);
     if (!isMatch) return next(new InvalidEmailPasswordError());
 
+    const userKey = REDIS_KEYS.user(String(user._id));
+
+    await redisClient.set(userKey, JSON.stringify(sanitizeUser(user)));
+
     sendTokenResponse(user, 200, res);
   }
 );
@@ -57,5 +64,30 @@ export const getAllUsers = asyncHandler(
 
     const users = await userService.getUsers();
     return res.status(200).json({ success: true, users });
+  }
+);
+
+export const getProfile = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id; // Assuming user ID is attached to the request by the protect middleware
+
+    if (!userId) {
+      return next(new UnauthorizedError());
+    }
+
+    const userKey = REDIS_KEYS.user(String(userId));
+    const cachedUser = await redisClient.get(userKey);
+    if (cachedUser) {
+      return res.json({ success: true, data: JSON.parse(cachedUser) });
+    }
+
+    const user = await userService.getUserById(String(userId));
+    if (!user) {
+      return next(new UnauthorizedError());
+    }
+
+    await redisClient.set(userKey, JSON.stringify(user));
+
+    return res.json({ success: true, data: sanitizeUser(user) });
   }
 );

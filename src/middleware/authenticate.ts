@@ -7,6 +7,8 @@ import { TokenPayload } from '../types/tokenPayload';
 import { resourceModelMapping, ResourceModels } from '../utils/resourceModel';
 import httpStatus from 'http-status';
 import asyncHandler from './async';
+import { REDIS_KEYS } from '../utils/redisKeyManager';
+import { redisClient } from '../redis';
 
 const userService = Container.get(UserService);
 
@@ -49,8 +51,21 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
     const secret = String(process.env.JWT_SECRET);
     const decoded = jwt.verify(token, secret) as TokenPayload;
 
+    const userKey = REDIS_KEYS.user(String(decoded._id));
+    const cachedUser = await redisClient.get(userKey);
+    if (cachedUser) {
+      req.user = JSON.parse(cachedUser);
+      return next();
+    }
+
     const user = await userService.getUserById(decoded._id);
+    if (!user) {
+      return next(new UnauthorizedError());
+    }
+
+    await redisClient.set(userKey, JSON.stringify(user));
     req.user = user;
+
     next();
   } catch (error) {
     return next(new UnauthorizedError());

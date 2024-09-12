@@ -1,8 +1,10 @@
 import User from '../models/user.model';
 import { Response } from 'express';
 import sanitizeUser from './sanitizeUser';
+import { REDIS_KEYS } from './redisKeyManager';
+import { redisClient } from '../redis';
 
-export const sendTokenResponse = (
+export const sendTokenResponse = async (
   user: InstanceType<typeof User>,
   statusCode: number,
   res: Response,
@@ -17,6 +19,9 @@ export const sendTokenResponse = (
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
   };
+
+  const userKey = REDIS_KEYS.user(String(user._id));
+  await redisClient.set(userKey, JSON.stringify(sanitizedUser));
 
   const responseBody = {
     success: true,

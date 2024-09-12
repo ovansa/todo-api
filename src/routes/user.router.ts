@@ -1,6 +1,7 @@
 import protect from '../middleware/authenticate';
 import {
   getAllUsers,
+  getProfile,
   loginUser,
   registerUser,
 } from '../controllers/user.controller';
@@ -14,4 +15,5 @@ export default (router: express.Router): void => {
     .get(protect, getAllUsers)
     .post(validateResource(registerUserSchema), registerUser);
   router.route('/login').post(validateResource(loginUserSchema), loginUser);
+  router.route('/profile').get(protect, getProfile);
 };

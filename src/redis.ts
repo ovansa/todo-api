@@ -2,30 +2,79 @@ import { Redis } from 'ioredis';
 import logger from './utils/logger';
 import { config } from './config';
 
-export const redisClient = new Redis({
-  host:
-    config.env === 'test' || config.env === 'development'
-      ? '127.00.1'
-      : config.redis.host,
-  port:
-    config.env === 'test' || config.env === 'development'
-      ? 6379
-      : config.redis.port,
-  password:
-    config.env === 'test' || config.env === 'development'
-      ? ''
-      : config.redis.password,
-});
+class RedisClient {
+  private client: Redis;
+  private redisHost: string;
+  private redisPort: number;
 
-redisClient.on('connect', () => {
-  logger.info('Redis connected.');
-});
+  constructor() {
+    this.redisHost =
+      config.env === 'test' || config.env === 'development'
+        ? '127.0.0.1'
+        : config.redis.host;
 
-redisClient.on('error', (err: Error) => {
-  console.log(err);
-  logger.error('Redis error: ', err);
-});
+    this.redisPort =
+      config.env === 'test' || config.env === 'development'
+        ? 6379
+        : config.redis.port;
+    this.client = new Redis({
+      host: this.redisHost,
+      port: this.redisPort,
+      password:
+        config.env === 'test' || config.env === 'development'
+          ? ''
+          : config.redis.password,
+    });
 
-export const closeRedis = () => {
-  redisClient.quit().then(() => logger.info('Redis connection closed.'));
-};
+    this.client.on('connect', () => {
+      logger.info(`Redis connected: ${this.redisHost}`);
+    });
+
+    this.client.on('error', (err: Error) => {
+      logger.error('Redis error: ', err);
+    });
+  }
+
+  async set(
+    key: string,
+    value: string,
+    expiration: number = 3600
+  ): Promise<void> {
+    try {
+      await this.client.set(key, value, 'EX', expiration);
+    } catch (err) {
+      logger.error('Error setting value in Redis:', err);
+      throw err;
+    }
+  }
+
+  async get(key: string): Promise<string | null> {
+    try {
+      return await this.client.get(key);
+    } catch (err) {
+      logger.error('Error getting value from Redis:', err);
+      throw err;
+    }
+  }
+
+  async del(key: string): Promise<void> {
+    try {
+      await this.client.del(key);
+    } catch (err) {
+      logger.error('Error deleting value from Redis:', err);
+      throw err;
+    }
+  }
+
+  async quit(): Promise<void> {
+    try {
+      await this.client.quit();
+      logger.info('Redis connection closed.');
+    } catch (err) {
+      logger.error('Error closing Redis connection:', err);
+      throw err;
+    }
+  }
+}
+
+export const redisClient = new RedisClient();

@@ -24,6 +24,22 @@ This is a Node.js-based Todo Application that manages tasks with CRUD operations
 - **Faker.js** for generating mock data in development.
 - **Pino** for logging.
 - **Mongoose Memory Server** for in-memory testing.
+- **Redis** for caching user profiles to improve performance.
+
+## Redis Setup
+
+The application uses Redis for caching user profiles to reduce database load and improve response times. Here's a summary of the Redis setup:
+
+- **Redis Host**: Configured based on the environment (`development`, `test`, or production).
+- **Redis Port**: Default to `6379` unless overridden.
+- **Redis Password**: Set based on environment configuration.
+- **Caching Behavior**:
+  - **Set**: User profile data is cached in Redis with a default expiration time of 3600 seconds (1 hour).
+  - **Get**: The `GET /profile` endpoint first checks Redis cache before querying the database. If the profile is not found in Redis, it falls back to the database.
+  - **Delete**: Handles cache invalidation if needed.
+  - **Error Handling**: Includes error logging for Redis operations.
+
+The Redis setup helps in quickly retrieving user profile data by reducing database lookups and improving overall application performance.
 
 ## Endpoints
 
@@ -31,7 +47,7 @@ This is a Node.js-based Todo Application that manages tasks with CRUD operations
 
 - `POST /register`: Register a new user.
 - `POST /login`: Log in a user and return a JWT token.
-- `GET /profile`: Get the logged-in user’s profile.
+- `GET /profile`: Get the logged-in user’s profile. This endpoint first checks Redis cache before querying the database.
 
 ### Todo Endpoints
 
@@ -56,6 +72,9 @@ This is a Node.js-based Todo Application that manages tasks with CRUD operations
    JWT_SECRET=<your-jwt-secret>
    JWT_EXPIRE=<your-jwt-expire>
    JWT_COOKIE_EXPIRE=<your-jwt-cookie-expire>
+   REDIS_HOST=<your-redis-host>
+   REDIS_PORT=<your-redis-port>
+   REDIS_PASSWORD=<your-redis-password>
    ```
 4. Run the development server:
    ```bash
@@ -68,9 +87,8 @@ This is a Node.js-based Todo Application that manages tasks with CRUD operations
 
 ## Middleware
 
-- **Protect**: Ensures a valid JWT token for authentication.
+- **Protect**: Ensures a valid JWT token for authentication. It utilizes Redis to cache user profiles for performance improvement.
 - **isOwner**: Verifies the user owns the todo resource they are attempting to access.
-- **Admin Middleware**: Restricts access to certain endpoints (e.g., user management) to admin users only.
 
 ## Mock Data Generation
 

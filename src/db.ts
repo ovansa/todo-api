@@ -10,6 +10,6 @@ export const connectDB = async () => {
   mongoose.Promise = Promise;
   mongoose
     .connect(MONGO_URL)
-    .then(() => logger.info(`DB Connected. ${new URL(MONGO_URL).host}`));
+    .then(() => logger.info(`DB Connected: ${new URL(MONGO_URL).host}`));
   mongoose.connection.on(`error`, (error: Error) => logger.error(error));
 };
