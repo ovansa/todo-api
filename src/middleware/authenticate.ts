@@ -10,7 +10,6 @@ import { ResourceNotFoundError, UnauthorizedError } from '../utils/customError';
 import { REDIS_KEYS } from '../utils/redisKeyManager';
 import { resourceModelMapping, ResourceModels } from '../utils/resourceModel';
 import logger from '../utils/logger';
-
 import asyncHandler from './async';
 
 const userService = Container.get(UserService);
