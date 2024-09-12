@@ -1,48 +1,30 @@
 import 'reflect-metadata';
-import express, { Application } from 'express';
-import morgan from 'morgan';
-import cors from 'cors';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import errorResponse from './middleware/error';
+import { Application } from 'express';
 
-import router from './routes';
 import logger from './utils/logger';
+import { connectDB } from './db';
+import { createServer } from './server';
+import mongoose from 'mongoose';
+import { redisClient } from './redis';
 
-dotenv.config();
+const app: Application = createServer();
 
-const MONGO_DEFAULT = `mongodb://localhost:27017/todo-api`;
-let MONGO_URL = process.env.MONGO_URL || MONGO_DEFAULT;
-const app: Application = express();
-
-app.use(
-  cors({
-    credentials: true,
-  })
-);
-app.use(express.json());
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('combined'));
-  MONGO_URL = MONGO_DEFAULT;
-}
-
-if (process.env.NODE_ENV === 'test') {
-  MONGO_URL = MONGO_DEFAULT;
-}
-
+connectDB();
 const server = app.listen(3000, () => {
   logger.info('Server running on http://localhost:3000.');
 });
 
-mongoose.Promise = Promise;
+const shutdown = async () => {
+  logger.info('Shutting down server...');
+  server.close(async () => {
+    logger.info('Server closed');
+    await mongoose.connection.close();
+    await redisClient.quit();
+    process.exit(0);
+  });
+};
 
-mongoose
-  .connect(MONGO_URL)
-  .then(() => logger.info(`DB Connected. ${new URL(MONGO_URL).host}`));
-mongoose.connection.on(`error`, (error: Error) => logger.error(error));
-
-app.use('/', router());
-
-app.use(errorResponse);
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
 
 export { server };
