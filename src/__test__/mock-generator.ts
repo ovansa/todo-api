@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
-import { ITodo } from '../models/todo.model.js';
-
 import { faker } from '@faker-js/faker';
+import mongoose from 'mongoose';
+
 import { TodoStatus } from '../constants';
+import { ITodo } from '../models/todo.model.js';
 import { IUser } from '../models/user.model.js';
 
 export const generateTodo = (overrides?: Partial<ITodo>): ITodo => {

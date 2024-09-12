@@ -1,9 +1,8 @@
-import { AnyObjectSchema } from 'yup';
 import { Request, Response, NextFunction } from 'express';
+import { AnyObjectSchema } from 'yup';
 
 const validateResource =
-  (schema: AnyObjectSchema) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  (schema: AnyObjectSchema) => async (req: Request, res: Response, next: NextFunction) => {
     try {
       await schema.validate({
         body: req.body,

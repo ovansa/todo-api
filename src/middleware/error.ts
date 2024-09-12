@@ -1,11 +1,12 @@
 import express, { NextFunction } from 'express';
+
 import CustomError from '../utils/customError';
 
 const errorResponse = (
   err: CustomError,
-  req: express.Request,
+  _req: express.Request,
   res: express.Response,
-  next: NextFunction
+  _next: NextFunction,
 ) => {
   let error = { ...err };
   error.message = err.message;

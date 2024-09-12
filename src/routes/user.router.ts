@@ -1,11 +1,7 @@
-import protect from '../middleware/authenticate';
-import {
-  getAllUsers,
-  getProfile,
-  loginUser,
-  registerUser,
-} from '../controllers/user.controller';
 import express from 'express';
+
+import { getAllUsers, getProfile, loginUser, registerUser } from '../controllers/user.controller';
+import protect from '../middleware/authenticate';
 import validateResource from '../middleware/validateResource';
 import { loginUserSchema, registerUserSchema } from '../schema/user.schema';
 

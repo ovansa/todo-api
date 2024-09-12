@@ -1,17 +1,18 @@
-import request from 'supertest';
 import status from 'http-status';
-import { server } from '../../../index';
 import mongoose from 'mongoose';
-import Todo, { ITodoRequest } from '../../../models/todo.model';
+import request from 'supertest';
+
 import { TodoStatus } from '../../../constants';
+import { server } from '../../../index';
+import Todo, { ITodoRequest } from '../../../models/todo.model';
+import { redisClient } from '../../../redis';
+import { createDocument } from '../../data';
 import {
   clearDatabase,
   connectTestMongoDb,
   disconnectTestMongoDb,
   simulateLogin,
 } from '../../helpers';
-import { createDocument } from '../../data';
-import { redisClient } from '../../../redis';
 
 beforeAll(() => connectTestMongoDb());
 
@@ -103,7 +104,7 @@ describe('Todo API Tests', () => {
       const { userOne } = await createDocument();
       const token = await simulateLogin(userOne);
 
-      const requestBody: any = {
+      const requestBody = {
         title: 'Test Todo with Extras',
         description: 'This is a test todo',
         extraField: 'This should be ignored',
@@ -126,9 +127,7 @@ describe('Todo API Tests', () => {
       const { userOne } = await createDocument();
       const token = await simulateLogin(userOne);
 
-      const res = await request(server)
-        .get('/todo')
-        .set('Authorization', `Bearer ${token}`);
+      const res = await request(server).get('/todo').set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(200);
       expect(res.body).toBeInstanceOf(Array);
@@ -259,7 +258,7 @@ describe('Todo API Tests', () => {
 
     it('should return 404 if todo is not found', async () => {
       const invalidTodoId = new mongoose.Types.ObjectId();
-      const { userOne, todoOne } = await createDocument();
+      const { userOne } = await createDocument();
       const token = await simulateLogin(userOne);
       const todoDataForUpdate = {
         title: 'Nonexistent Todo',

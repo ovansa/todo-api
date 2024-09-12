@@ -2,7 +2,14 @@ import { Service } from 'typedi';
 
 import User, { IUser } from '../models/user.model';
 
-interface UserInput {}
+export interface UserInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  username: string;
+  role?: string;
+}
 
 @Service()
 export class UserService {

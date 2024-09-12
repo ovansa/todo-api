@@ -23,8 +23,7 @@ const createData = async () => {
 };
 
 export const createDocument = async () => {
-  const { todoOne, todoTwo, todoThree, userOne, userTwo, userThree } =
-    await createData();
+  const { todoOne, todoTwo, todoThree, userOne, userTwo, userThree } = await createData();
 
   await Todo.create([todoOne, todoTwo, todoThree]);
   await User.create([userOne, userTwo, userThree]);

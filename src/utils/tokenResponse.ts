@@ -1,14 +1,16 @@
-import User from '../models/user.model';
 import { Response } from 'express';
-import sanitizeUser from './sanitizeUser';
-import { REDIS_KEYS } from './redisKeyManager';
+
+import User from '../models/user.model';
 import { redisClient } from '../redis';
+
+import { REDIS_KEYS } from './redisKeyManager';
+import sanitizeUser from './sanitizeUser';
 
 export const sendTokenResponse = async (
   user: InstanceType<typeof User>,
   statusCode: number,
   res: Response,
-  message?: string
+  message?: string,
 ) => {
   const token = user.generateAuthToken();
   const cookie_expire = parseInt(process.env.JWT_COOKIE_EXPIRE || '10', 10);
@@ -30,8 +32,5 @@ export const sendTokenResponse = async (
     ...(message && { message }),
   };
 
-  return res
-    .status(statusCode)
-    .cookie('token', token, options)
-    .json(responseBody);
+  return res.status(statusCode).cookie('token', token, options).json(responseBody);
 };

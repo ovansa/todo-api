@@ -1,14 +1,17 @@
-import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
-import { ResourceNotFoundError, UnauthorizedError } from '../utils/customError';
+import httpStatus from 'http-status';
+import jwt from 'jsonwebtoken';
 import Container from 'typedi';
+
+import { redisClient } from '../redis';
 import { UserService } from '../services/user.service';
 import { TokenPayload } from '../types/tokenPayload';
-import { resourceModelMapping, ResourceModels } from '../utils/resourceModel';
-import httpStatus from 'http-status';
-import asyncHandler from './async';
+import { ResourceNotFoundError, UnauthorizedError } from '../utils/customError';
 import { REDIS_KEYS } from '../utils/redisKeyManager';
-import { redisClient } from '../redis';
+import { resourceModelMapping, ResourceModels } from '../utils/resourceModel';
+import logger from '../utils/logger';
+
+import asyncHandler from './async';
 
 const userService = Container.get(UserService);
 
@@ -26,20 +29,17 @@ export const isOwner = (resource: ResourceModels) =>
     const resourceData = await resourceModel.findById(resourceId);
     if (!resourceData) return next(new ResourceNotFoundError());
 
-    if (String(resourceData.createdBy) !== String(req.user._id)) {
+    if (String(resourceData.createdBy) !== String(req?.user?._id)) {
       return next(new ResourceNotFoundError());
     }
 
     next();
   });
 
-const protect = async (req: Request, res: Response, next: NextFunction) => {
+const protect = async (req: Request, _res: Response, next: NextFunction) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
 
@@ -68,6 +68,7 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
 
     next();
   } catch (error) {
+    logger.error(error);
     return next(new UnauthorizedError());
   }
 };

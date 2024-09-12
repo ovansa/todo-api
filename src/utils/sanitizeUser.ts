@@ -1,13 +1,13 @@
-import { IUser } from '../models/user.model';
 import { omit } from 'lodash';
 import validator from 'validator';
+
+import { IUser } from '../models/user.model';
 
 const sanitizeUser = (user: IUser) => {
   const sanitizedUser = user.toJSON();
 
   if (sanitizedUser.email) {
-    sanitizedUser.email =
-      validator.normalizeEmail(sanitizedUser.email) || sanitizedUser.email;
+    sanitizedUser.email = validator.normalizeEmail(sanitizedUser.email) || sanitizedUser.email;
   }
 
   if (sanitizedUser.firstName) {

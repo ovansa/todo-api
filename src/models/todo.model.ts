@@ -1,5 +1,6 @@
-import { TodoStatus } from '../constants';
 import mongoose from 'mongoose';
+
+import { TodoStatus } from '../constants';
 
 export interface ITodoRequest {
   title: string;
@@ -33,7 +34,7 @@ const TodoSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export default mongoose.model<ITodo>('Todo', TodoSchema);

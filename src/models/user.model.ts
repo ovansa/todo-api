@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
+
 import { UserRoles } from '../constants';
 
 export interface IUser extends mongoose.Document {
@@ -28,7 +29,7 @@ const UserSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 UserSchema.pre('save', async function (next) {
@@ -43,9 +44,7 @@ UserSchema.pre('save', async function (next) {
   return next();
 });
 
-UserSchema.methods.matchPassword = async function (
-  userPassword: string
-): Promise<boolean> {
+UserSchema.methods.matchPassword = async function (userPassword: string): Promise<boolean> {
   const user = this as IUser;
 
   return bcrypt.compare(userPassword, user.password);
@@ -54,7 +53,7 @@ UserSchema.methods.matchPassword = async function (
 UserSchema.methods.generateAuthToken = function (): string {
   const user = this as IUser;
 
-  return jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+  return jwt.sign({ _id: user._id }, process.env.JWT_SECRET || '', {
     expiresIn: process.env.JWT_EXPIRE || '10d',
   });
 };

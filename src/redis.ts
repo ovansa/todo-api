@@ -1,6 +1,7 @@
 import { Redis } from 'ioredis';
-import logger from './utils/logger';
+
 import { config } from './config';
+import logger from './utils/logger';
 
 class RedisClient {
   private client: Redis;
@@ -9,21 +10,14 @@ class RedisClient {
 
   constructor() {
     this.redisHost =
-      config.env === 'test' || config.env === 'development'
-        ? '127.0.0.1'
-        : config.redis.host;
+      config.env === 'test' || config.env === 'development' ? '127.0.0.1' : config.redis.host;
 
     this.redisPort =
-      config.env === 'test' || config.env === 'development'
-        ? 6379
-        : config.redis.port;
+      config.env === 'test' || config.env === 'development' ? 6379 : config.redis.port;
     this.client = new Redis({
       host: this.redisHost,
       port: this.redisPort,
-      password:
-        config.env === 'test' || config.env === 'development'
-          ? ''
-          : config.redis.password,
+      password: config.env === 'test' || config.env === 'development' ? '' : config.redis.password,
     });
 
     this.client.on('connect', () => {
@@ -35,11 +29,7 @@ class RedisClient {
     });
   }
 
-  async set(
-    key: string,
-    value: string,
-    expiration: number = 3600
-  ): Promise<void> {
+  async set(key: string, value: string, expiration: number = 3600): Promise<void> {
     try {
       await this.client.set(key, value, 'EX', expiration);
     } catch (err) {

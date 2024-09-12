@@ -15,7 +15,7 @@ const log = pino(
     },
     timestamp: () => `,"time":"${DateTime.now().toISO()}"`, // ISO format for timestamp
   },
-  prettyPrint
+  prettyPrint,
 );
 
 export default log;

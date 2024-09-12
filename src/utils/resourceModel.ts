@@ -1,4 +1,5 @@
 import { Model } from 'mongoose';
+
 import Todo from '../models/todo.model';
 import User from '../models/user.model';
 

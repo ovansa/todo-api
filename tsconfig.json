@@ -2,16 +2,27 @@
   "compilerOptions": {
     "module": "CommonJS",
     "moduleResolution": "node",
+    "target": "ES6",
     "baseUrl": "src",
     "outDir": "dist",
     "sourceMap": true,
-    "noImplicitAny": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "skipLibCheck": true,
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "strict": true, // Enabling strict type checking
+    "noImplicitAny": true, // Already enabled
+    "noImplicitReturns": true, // Helps avoid missing return statements
+    "noUnusedLocals": true, // Helps to identify unused variables
+    "noUnusedParameters": true, // Helps to identify unused parameters
+    "esModuleInterop": true, // Ensures compatibility with ES module imports
+    "allowSyntheticDefaultImports": true, // Supports default imports from modules with no default export
+    "experimentalDecorators": true, // Required for TypeDI and similar libraries
+    "emitDecoratorMetadata": true, // Required for TypeDI and similar libraries
+    "skipLibCheck": true, // Skips type checking of all declaration files
+    "forceConsistentCasingInFileNames": true, // Enforces case-sensitive imports
+    "strictNullChecks": true, // Helps catch null-related errors early
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "resolveJsonModule": true, // Allows importing JSON modules
+    "isolatedModules": true, // Enforces certain best practices by treating files as isolated units
+    "jsx": "react" // Include if you're using React
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"] // Exclude unnecessary files
 }

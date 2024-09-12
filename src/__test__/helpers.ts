@@ -1,11 +1,12 @@
 import { Server } from 'http';
+
+import jwt from 'jsonwebtoken';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import request from 'supertest';
-import jwt from 'jsonwebtoken';
 
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import log from '../utils/logger';
 import { IUser } from '../models/user.model';
+import log from '../utils/logger';
 
 let mongoServer: MongoMemoryServer;
 
@@ -20,7 +21,7 @@ export const disconnectTestMongoDb = async () => {
 export const clearDatabase = async () => {
   if (mongoose.connection.readyState === 1) {
     try {
-      await mongoose.connection.db.dropDatabase();
+      await mongoose?.connection?.db?.dropDatabase();
     } catch (error) {
       log.error('Error clearing database:', error);
       throw error;
@@ -30,10 +31,7 @@ export const clearDatabase = async () => {
   }
 };
 
-export const loginUser = async (
-  user: IUser,
-  server: Server
-): Promise<string> => {
+export const loginUser = async (user: IUser, server: Server): Promise<string> => {
   const body = {
     email: user.email,
     password: user.password,

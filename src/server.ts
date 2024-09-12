@@ -1,9 +1,10 @@
+import cors from 'cors';
 import express, { Application } from 'express';
 import morgan from 'morgan';
-import cors from 'cors';
+
 import { config } from './config';
-import router from './routes';
 import errorResponse from './middleware/error';
+import router from './routes';
 
 export const createServer = (): Application => {
   const app: express.Express = express();
@@ -11,7 +12,7 @@ export const createServer = (): Application => {
   app.use(
     cors({
       credentials: true,
-    })
+    }),
   );
   app.use(express.json());
 

@@ -1,19 +1,13 @@
-import request from 'supertest';
-import status from 'http-status';
-import { server } from '../../../index';
-import mongoose from 'mongoose';
-import Todo, { ITodoRequest } from '../../../models/todo.model';
-import { TodoStatus } from '../../../constants';
-import {
-  clearDatabase,
-  connectTestMongoDb,
-  disconnectTestMongoDb,
-  simulateLogin,
-} from '../../helpers';
-import { createDocument } from '../../data';
 import { faker } from '@faker-js/faker';
+import status from 'http-status';
 import httpStatus from 'http-status';
+import mongoose from 'mongoose';
+import request from 'supertest';
+
+import { server } from '../../../index';
 import { redisClient } from '../../../redis';
+import { createDocument } from '../../data';
+import { clearDatabase, connectTestMongoDb, disconnectTestMongoDb } from '../../helpers';
 
 beforeAll(() => connectTestMongoDb());
 
@@ -58,7 +52,7 @@ describe('User API Tests', () => {
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
           }),
-        })
+        }),
       );
     });
 
@@ -138,7 +132,7 @@ describe('User API Tests', () => {
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
           }),
-        })
+        }),
       );
     });
 

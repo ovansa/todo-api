@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import { Application } from 'express';
-
-import logger from './utils/logger';
-import { connectDB } from './db';
-import { createServer } from './server';
 import mongoose from 'mongoose';
+
+import { connectDB } from './db';
 import { redisClient } from './redis';
+import { createServer } from './server';
+import logger from './utils/logger';
 
 const app: Application = createServer();
 

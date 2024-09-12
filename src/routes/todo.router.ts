@@ -1,4 +1,5 @@
-import protect, { isOwner } from '../middleware/authenticate';
+import express from 'express';
+
 import {
   addTodo,
   getTodos,
@@ -6,7 +7,7 @@ import {
   updateTodo,
   deleteTodo,
 } from '../controllers/todo.controller';
-import express from 'express';
+import protect, { isOwner } from '../middleware/authenticate';
 import { ResourceModels } from '../utils/resourceModel';
 
 export default (router: express.Router): void => {
