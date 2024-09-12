@@ -10,8 +10,12 @@ const validateResource =
         params: req.params,
       });
       return next();
-    } catch (error: any) {
-      return res.status(400).json({ success: false, message: error.message });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return res.status(400).json({ success: false, message: error.message });
+      } else {
+        return res.status(400).json({ success: false, message: 'An unknown error occurred.' });
+      }
     }
   };
 
