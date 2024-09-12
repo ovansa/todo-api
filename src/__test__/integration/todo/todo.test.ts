@@ -11,6 +11,7 @@ import {
   simulateLogin,
 } from '../../helpers';
 import { createDocument } from '../../data';
+import { closeRedis } from '../../../redis';
 
 beforeAll(() => connectTestMongoDb());
 
@@ -20,6 +21,7 @@ afterAll(async () => {
   await server.close();
   await mongoose.disconnect();
   await disconnectTestMongoDb();
+  await closeRedis();
 });
 
 describe('Todo API Tests', () => {

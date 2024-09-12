@@ -3,8 +3,18 @@ import logger from './utils/logger';
 import { config } from './config';
 
 export const redisClient = new Redis({
-  host: config.redis.host,
-  port: config.redis.port,
+  host:
+    config.env === 'test' || config.env === 'development'
+      ? '127.00.1'
+      : config.redis.host,
+  port:
+    config.env === 'test' || config.env === 'development'
+      ? 6379
+      : config.redis.port,
+  password:
+    config.env === 'test' || config.env === 'development'
+      ? ''
+      : config.redis.password,
 });
 
 redisClient.on('connect', () => {
@@ -12,6 +22,7 @@ redisClient.on('connect', () => {
 });
 
 redisClient.on('error', (err: Error) => {
+  console.log(err);
   logger.error('Redis error: ', err);
 });
 
