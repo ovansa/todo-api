@@ -6,7 +6,7 @@ import logger from './utils/logger';
 const MONGO_DEFAULT = `mongodb://localhost:27017/todo-api`;
 
 export const connectDB = async () => {
-  let MONGO_URL =
+  const MONGO_URL =
     config.env === 'test' || config.env === 'development' ? MONGO_DEFAULT : config.mongoUrl;
 
   mongoose.Promise = Promise;
