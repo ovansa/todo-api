@@ -26,35 +26,60 @@ This is a Node.js-based Todo Application that manages tasks with CRUD operations
 - **Mongoose Memory Server** for in-memory testing.
 - **Redis** for caching user profiles to improve performance.
 
-## Redis Setup
+## Docker Setup
 
-The application uses Redis for caching user profiles to reduce database load and improve response times. Here's a summary of the Redis setup:
+The application, MongoDB, and Redis are containerized using Docker Compose. Follow these steps to set up and run the application with Docker.
 
-- **Redis Host**: Configured based on the environment (`development`, `test`, or production).
-- **Redis Port**: Default to `6379` unless overridden.
-- **Redis Password**: Set based on environment configuration.
-- **Caching Behavior**:
-  - **Set**: User profile data is cached in Redis with a default expiration time of 3600 seconds (1 hour).
-  - **Get**: The `GET /profile` endpoint first checks Redis cache before querying the database. If the profile is not found in Redis, it falls back to the database.
-  - **Delete**: Handles cache invalidation if needed.
-  - **Error Handling**: Includes error logging for Redis operations.
+### Prerequisites
 
-The Redis setup helps in quickly retrieving user profile data by reducing database lookups and improving overall application performance.
+- Docker
+- Docker Compose
 
-## Endpoints
+### Docker Configuration
 
-### User Endpoints
+Ensure you have a `docker-compose.yml` file in the root of your project with the following content:
 
-- `POST /register`: Register a new user.
-- `POST /login`: Log in a user and return a JWT token.
-- `GET /profile`: Get the logged-in user’s profile. This endpoint first checks Redis cache before querying the database.
+### Building and Running Containers
 
-### Todo Endpoints
+1. **Build and start the containers:**
 
-- `POST /todo`: Create a new todo.
-- `GET /todo`: Get a list of todos (admins can fetch all, users can fetch their own).
-- `PUT /todo/:id`: Update a specific todo (only the owner can update).
-- `DELETE /todo/:id`: Delete a specific todo (only the owner can delete).
+   ```bash
+   docker-compose up --build
+   ```
+
+   This command will build the Docker images (if necessary) and start the containers as defined in the `docker-compose.yml` file.
+
+2. **Run the containers in detached mode (background):**
+
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Check the status of the containers:**
+
+   ```bash
+   docker-compose ps
+   ```
+
+### Stopping Containers
+
+1. **Stop and remove the containers:**
+
+   ```bash
+   docker-compose down
+   ```
+
+   This command will stop the containers and remove them, along with any associated networks and volumes.
+
+## Accessing MongoDB and Redis
+
+- **MongoDB Compass**: Connect to MongoDB using MongoDB Compass with the connection string `mongodb://localhost:27018/todo-db`.
+
+- **Redis CLI**: Connect to Redis using the Redis CLI with the command:
+
+  ```bash
+  redis-cli -p 6380
+  ```
 
 ## Setup Instructions
 
@@ -68,17 +93,17 @@ The Redis setup helps in quickly retrieving user profile data by reducing databa
    ```
 3. Setup environment variables in a `.env` file:
    ```bash
-   MONGO_URI=<your-mongo-db-uri>
+   MONGO_URL=mongodb://localhost:27017/todo-db
    JWT_SECRET=<your-jwt-secret>
    JWT_EXPIRE=<your-jwt-expire>
    JWT_COOKIE_EXPIRE=<your-jwt-cookie-expire>
-   REDIS_HOST=<your-redis-host>
-   REDIS_PORT=<your-redis-port>
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
    REDIS_PASSWORD=<your-redis-password>
    ```
-4. Run the development server:
+4. Build and run Docker containers:
    ```bash
-   npm run dev
+   docker-compose up --build
    ```
 5. To run tests:
    ```bash
