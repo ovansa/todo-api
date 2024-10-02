@@ -105,7 +105,7 @@ export const updateTodo = asyncHandler(
     const todoData = {
       ...(title && { title }),
       ...(description && { description }),
-      ...(status in TodoStatus && { status }),
+      ...(Object.values(TodoStatus).includes(status) && { status }),
     };
 
     if (Object.keys(todoData).length === 0) {
