@@ -20,7 +20,6 @@ export const connectDB = async () => {
 export const createTestData = async () => {
   try {
     if (config.env !== 'test') {
-      console.log('I got here');
       const userCount = await User.countDocuments();
 
       if (userCount <= 1) {
