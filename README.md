@@ -13,6 +13,7 @@ This is a Node.js-based Todo Application that manages tasks with CRUD operations
 - **Filtering & Sorting**: Todos can be filtered by status and sorted by fields like creation date or priority.
 - **Pagination**: Efficiently handles large datasets with pagination.
 - **Password Hashing & Security**: User passwords are hashed before storage for security.
+- **Database Seeding**: If no users exist in the database, it will automatically be seeded with sample data for testing, including a predefined `oneUser`.
 
 ## Tech Stack
 
@@ -25,6 +26,25 @@ This is a Node.js-based Todo Application that manages tasks with CRUD operations
 - **Pino** for logging.
 - **Mongoose Memory Server** for in-memory testing.
 - **Redis** for caching user profiles to improve performance.
+
+## Database Seeding
+
+If the application detects that there are no users in the database, it will automatically seed the database with sample users and todos. This helps set up the environment for testing and development. The first seeded user (`oneUser`) is designed for easy testing and debugging.
+
+### `oneUser` Data:
+
+```json
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "username": "johndoe",
+  "email": "john.doe@gmail.com",
+  "password": "Password0123$",
+  "role": "DEFAULT_USER"
+}
+```
+
+You can use the above credentials for testing the application.
 
 ## Docker Setup
 
@@ -117,4 +137,4 @@ Ensure you have a `docker-compose.yml` file in the root of your project with the
 
 ## Mock Data Generation
 
-Use `faker.js` to generate mock data for development. You can find the logic in the `mock-generator.ts` file for generating users and todos.
+Use `faker.js` to generate mock data for development. You can find the logic in the `mock-generator.ts` file for generating users and todos. The application will automatically generate sample users and todos in the database if none exist, ensuring the development environment is ready for testing.

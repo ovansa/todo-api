@@ -29,8 +29,27 @@ const generateTodoData = (userId: string): Partial<ITodo> => ({
 const createUsersWithTodos = async () => {
   const firstThreeUsers: { email: string; password: string }[] = [];
 
+  const oneUser = {
+    firstName: 'John',
+    lastName: 'Doe',
+    username: 'johndoe',
+    email: `john.doe@gmail.com`,
+    role: UserRoles.DEFAULT_USER,
+    password: 'Password0123$',
+  };
+
   try {
-    for (let i = 0; i < noOfUsers; i++) {
+    // Create the oneUser in the database
+    const createdOneUser = await User.create(oneUser);
+    firstThreeUsers.push({ email: createdOneUser.email, password: oneUser.password });
+
+    const todosDataForOneUser = Array.from({ length: noOfTasks }, () =>
+      generateTodoData(String(createdOneUser._id)),
+    );
+    await Todo.insertMany(todosDataForOneUser);
+
+    // Create the remaining users
+    for (let i = 1; i < noOfUsers; i++) {
       const userData = generateUserData();
       const user = await User.create(userData);
 
@@ -44,9 +63,7 @@ const createUsersWithTodos = async () => {
     }
 
     logger.info(`✅ Successfully created ${noOfUsers} users and their todos.`);
-    logger.info(
-      `Details of the first 3 users: ${JSON.stringify(JSON.stringify(firstThreeUsers, null, 2))}`,
-    );
+    logger.info(`Details of the first 3 users: ${JSON.stringify(firstThreeUsers, null, 2)}`);
   } catch (error) {
     logger.error('❌ Error occurred during user or todo creation:', error);
   }
