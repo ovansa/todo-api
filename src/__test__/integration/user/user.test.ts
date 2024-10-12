@@ -70,7 +70,7 @@ describe('User API Tests', () => {
 
       expect(res.status).toBe(status.BAD_REQUEST);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toMatch('Email address is already taken.');
+      expect(res.body.message).toMatch('Email address is already taken.');
     });
 
     it('should return 400 for invalid email format', async () => {
@@ -144,7 +144,7 @@ describe('User API Tests', () => {
 
       expect(res.status).toBe(status.UNAUTHORIZED);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toBe('Invalid email or password.');
+      expect(res.body.message).toBe('Invalid email or password.');
     });
 
     it('should return 400 if email or password is missing', async () => {

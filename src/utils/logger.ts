@@ -8,8 +8,11 @@ const prettyPrint = pinoPretty({
   ignore: 'pid,hostname', // Hides pid and hostname from logs
 });
 
+const logLevel = process.env.NODE_ENV === 'test' ? 'error' : 'info'; // Suppress warnings in test mode
+
 const log = pino(
   {
+    level: logLevel,
     base: {
       pid: false,
     },

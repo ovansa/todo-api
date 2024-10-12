@@ -6,7 +6,7 @@ import { config } from './config';
 import logger from './utils/logger';
 import createUsersWithTodos from './scripts/createUsersWithTodos';
 
-const MONGO_DEFAULT = `mongodb://localhost:27017/todo-api`;
+const MONGO_DEFAULT = `mongodb://localhost:27017/todo-apis`;
 
 export const connectDB = async () => {
   const MONGO_URL =
