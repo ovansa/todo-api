@@ -79,7 +79,7 @@ describe('Todo API Tests', () => {
 
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toBe('Todo title is required.');
+      expect(res.body.message).toBe('Todo title is required.');
     });
 
     it('should return a 400 error when title is empty', async () => {
@@ -97,7 +97,7 @@ describe('Todo API Tests', () => {
 
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toBe('Todo title is required.');
+      expect(res.body.message).toBe('Todo title is required.');
     });
 
     it('should ignore additional unexpected fields', async () => {
@@ -206,7 +206,7 @@ describe('Todo API Tests', () => {
 
       expect(res.statusCode).toEqual(status.NOT_FOUND);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toBe('Resource not found.');
+      expect(res.body.message).toBe('Resource not found.');
     });
 
     it('should return 400 for an invalid ID format', async () => {
@@ -219,7 +219,7 @@ describe('Todo API Tests', () => {
 
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toBe('Resource not found.');
+      expect(res.body.message).toBe('Resource not found.');
     });
 
     it('should return 200 and a todo with all properties', async () => {
@@ -271,7 +271,7 @@ describe('Todo API Tests', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.NOT_FOUND);
-      expect(res.body.error).toBe('Resource not found.');
+      expect(res.body.message).toBe('Resource not found.');
     });
 
     it('should not update a todo if no fields are provided', async () => {
@@ -284,7 +284,7 @@ describe('Todo API Tests', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
-      expect(res.body.error).toBe('Request data cannot be empty.');
+      expect(res.body.message).toBe('Request data cannot be empty.');
     });
   });
 
@@ -316,7 +316,7 @@ describe('Todo API Tests', () => {
 
       expect(res.statusCode).toEqual(status.NOT_FOUND);
       expect(res.body.success).toBeFalsy();
-      expect(res.body.error).toBe('Resource not found.');
+      expect(res.body.message).toBe('Resource not found.');
     });
 
     it('should return 400 for invalid ID format', async () => {
@@ -330,7 +330,7 @@ describe('Todo API Tests', () => {
 
       expect(res.statusCode).toEqual(status.BAD_REQUEST);
       expect(res.body.success).toBeFalsy();
-      expect(res.body.error).toBe('Resource not found.');
+      expect(res.body.message).toBe('Resource not found.');
     });
   });
 });

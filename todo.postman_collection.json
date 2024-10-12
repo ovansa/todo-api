@@ -1,0 +1,815 @@
+{
+	"info": {
+		"_postman_id": "a062ea2c-5434-4740-8159-8107eaa05d26",
+		"name": "Todos API",
+		"description": "A simple todo app",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3064753"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "/register",
+					"item": [
+						{
+							"name": "Positive Scenarios",
+							"item": [
+								{
+									"name": "Register with valid data",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Generate random values",
+													"const randomIdentifier = Math.random().toString(36).substring(7); ",
+													"",
+													"const email = `user_${randomIdentifier}@gmail.com`;",
+													"const password = `password_${randomIdentifier}`;",
+													"const username = `user_${randomIdentifier}`;",
+													"const firstName = `FirstName_${randomIdentifier}`;",
+													"const lastName = `LastName_${randomIdentifier}`;",
+													"",
+													"",
+													"pm.environment.set('register_email', email);",
+													"pm.environment.set('register_password', password);",
+													"pm.environment.set('register_username', username);",
+													"pm.environment.set('register_firstname', firstName);",
+													"pm.environment.set('register_lastname', lastName);",
+													"",
+													"console.log({",
+													"    email: email,",
+													"    password: password,",
+													"    username: username,",
+													"    firstName: firstName,",
+													"    lastName: lastName",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"",
+													"const responseData = pm.response.json();",
+													"",
+													"pm.test(\"Success is true\", function () {",
+													"    pm.expect(responseData.success).to.be.true;",
+													"});",
+													"",
+													"pm.test(\"Token is present\", function () {",
+													"    pm.expect(responseData.token).to.be.a('string').that.is.not.empty;",
+													"});",
+													"",
+													"const expectedEmail = pm.environment.get(\"register_email\");",
+													"const expectedUsername = pm.environment.get(\"register_username\");",
+													"const expectedFirstName = pm.environment.get(\"register_firstname\");",
+													"const expectedLastName = pm.environment.get(\"register_lastname\");",
+													"",
+													"pm.test(\"Email in response matches request\", function () {",
+													"    pm.expect(responseData.user.email).to.eql(expectedEmail);",
+													"});",
+													"",
+													"pm.test(\"Username in response matches request\", function () {",
+													"    pm.expect(responseData.user.username).to.eql(expectedUsername);",
+													"});",
+													"",
+													"pm.test(\"First name in response matches request\", function () {",
+													"    pm.expect(responseData.user.firstName).to.eql(expectedFirstName);",
+													"});",
+													"",
+													"pm.test(\"Last name in response matches request\", function () {",
+													"    pm.expect(responseData.user.lastName).to.eql(expectedLastName);",
+													"});",
+													"",
+													"pm.test(\"User role is default\", function () {",
+													"    pm.expect(responseData.user.role).to.eql('default');",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{register_email}}\",\n    \"password\": \"{{register_password}}\",\n    \"username\": \"{{register_username}}\",\n    \"firstName\": \"{{register_firstname}}\",\n    \"lastName\": \"{{register_lastname}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/register",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Negative Scenarios",
+							"item": [
+								{
+									"name": "Missing required fields",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const responseData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"Returns correct error message for missing email\", function () {",
+													"    pm.expect(responseData).to.have.property('message', 'Email is required.');",
+													"});",
+													"",
+													"pm.test(\"Success is false\", function () {",
+													"    pm.expect(responseData.success).to.be.false;",
+													"});",
+													"",
+													"const registerUrl = pm.environment.get(\"baseUrl\") + \"/register\";",
+													"let requestBody = {",
+													"    // \"password\": \"password\", // Commenting this line to remove password",
+													"    \"username\": \"testuser\",",
+													"    \"firstName\": \"Test\",",
+													"    \"lastName\": \"User\"",
+													"};",
+													"",
+													"// Send the request",
+													"pm.sendRequest({",
+													"    url: registerUrl,",
+													"    method: \"POST\",",
+													"    header: {",
+													"        'Content-Type': 'application/json'",
+													"    },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify(requestBody)",
+													"    }",
+													"}, (err, res) => {",
+													"    if (err) {",
+													"        console.log(`Error sending request for register`, err);",
+													"    } else {",
+													"        pm.test(`Returns correct error message for missing password`, () => {",
+													"            pm.expect(res).to.have.status(400); ",
+													"            pm.expect(res.json()).to.have.property('message', 'Password is required.'); ",
+													"        });",
+													"    }",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"password\": \"{{register_password}}\",\n    \"username\": \"{{register_username}}\",\n    \"firstName\": \"{{register_firstname}}\",\n    \"lastName\": \"{{register_lastname}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/register",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Invalid email formats",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const responseData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"Returns correct error message\", function () {",
+													"    pm.expect(responseData).to.have.property('message', 'Invalid email format.');",
+													"});",
+													"",
+													"pm.test(\"Success is false\", function () {",
+													"    pm.expect(responseData.success).to.be.false;",
+													"});",
+													"",
+													"",
+													"",
+													"const delay = 5 * 1000;",
+													"const invalidEmails = [",
+													"    \"@missingusername.\",",
+													"    \"username@\",",
+													"    \"www.goog.com\"",
+													"];",
+													"",
+													"const registerUrl = pm.environment.get(\"baseUrl\") + \"/register\";",
+													"",
+													"setTimeout(() => {",
+													"    invalidEmails.forEach((email) => {",
+													"    let requestBody = {",
+													"        \"email\": email,",
+													"        \"password\": \"password\",",
+													"        \"username\": \"testuser\",",
+													"        \"firstName\": \"Test\",",
+													"        \"lastName\": \"User\"",
+													"    };",
+													"",
+													"    pm.sendRequest({",
+													"        url: registerUrl,",
+													"        method: \"POST\",",
+													"        header: {",
+													"            'Content-Type': 'application/json'",
+													"        },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify(requestBody)",
+													"        }",
+													"    }, (err, res) => {",
+													"        if (err) {",
+													"            console.log(`Error sending request for email: ${email}`, err);",
+													"        } else {",
+													"            // Test assertions to check response status and error message",
+													"            pm.test(`Invalid email: ${email} returns correct error`, () => {",
+													"                pm.expect(res).to.have.status(400);",
+													"                pm.expect(res.json()).to.have.property('message', 'Invalid email format.');",
+													"            });",
+													"        }",
+													"    });",
+													"});",
+													"}, delay);",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"plainaddress\",\n    \"password\": \"{{register_password}}\",\n    \"username\": \"{{register_username}}\",\n    \"firstName\": \"{{register_firstname}}\",\n    \"lastName\": \"{{register_lastname}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/register",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Weak password",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const responseData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"Returns correct error message\", function () {",
+													"    pm.expect(responseData).to.have.property('message', 'Password must be at least 8 characters.');",
+													"});",
+													"",
+													"pm.test(\"Success is false\", function () {",
+													"    pm.expect(responseData.success).to.be.false;",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{register_email}}\",\n    \"password\": \"1234\",\n    \"username\": \"{{register_username}}\",\n    \"firstName\": \"{{register_firstname}}\",\n    \"lastName\": \"{{register_lastname}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/register",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Duplicate email",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const responseData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"Returns correct error message\", function () {",
+													"    pm.expect(responseData).to.have.property('message', 'Email address is already taken.');",
+													"});",
+													"",
+													"pm.test(\"Success is false\", function () {",
+													"    pm.expect(responseData.success).to.be.false;",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{register_email}}\",\n    \"password\": \"{{register_password}}\",\n    \"username\": \"{{register_username}}\",\n    \"firstName\": \"{{register_firstname}}\",\n    \"lastName\": \"{{register_lastname}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/register",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "/login",
+					"item": [
+						{
+							"name": "Positive Scenarios",
+							"item": [
+								{
+									"name": "Login",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const responseData = pm.response.json();",
+													"",
+													"pm.environment.set(\"login_token\", responseData.token);",
+													"pm.environment.set(\"login_firstName\", responseData.user.firstName);",
+													"pm.environment.set(\"login_lastName\", responseData.user.lastName);",
+													"pm.environment.set(\"login_email\", responseData.user.email);",
+													"pm.environment.set(\"login_role\", responseData.user.role);",
+													"pm.environment.set(\"login_id\", responseData.user._id);",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response success is true\", function () {",
+													"    pm.expect(responseData).to.have.property('success', true);",
+													"});",
+													"",
+													"pm.test(\"Token is present and is a string\", function () {",
+													"    pm.expect(responseData).to.have.property('token').that.is.a('string');",
+													"});",
+													"",
+													"pm.test(\"User object is present\", function () {",
+													"    pm.expect(responseData).to.have.property('user').that.is.an('object');",
+													"});",
+													"",
+													"pm.test(\"User properties are valid\", function () {",
+													"    const user = responseData.user;",
+													"    pm.expect(user).to.have.property('_id').that.is.a('string');",
+													"    pm.expect(user).to.have.property('firstName').that.is.a('string');",
+													"    pm.expect(user).to.have.property('lastName').that.is.a('string');",
+													"    pm.expect(user).to.have.property('email').that.is.a('string').and.matches(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/); // Basic email validation",
+													"    pm.expect(user).to.have.property('username').that.is.a('string');",
+													"    pm.expect(user).to.have.property('role').that.is.a('string');",
+													"    pm.expect(user).to.have.property('createdAt').that.is.a('string');",
+													"    pm.expect(user).to.have.property('updatedAt').that.is.a('string');",
+													"    pm.expect(user).to.have.property('__v').that.is.a('number');",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{login_email}}\",\n    \"password\": \"{{login_password}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Negative Scenarios",
+							"item": [
+								{
+									"name": "Email does not exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const responseData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 401\", function () {",
+													"    pm.response.to.have.status(401);",
+													"});",
+													"",
+													"pm.test(\"Response success is false\", function () {",
+													"    pm.expect(responseData).to.have.property('success', false);",
+													"});",
+													"",
+													"pm.test(\"Returns correct error message\", function () {",
+													"    pm.expect(responseData).to.have.property('message', 'Invalid email or password.'); ",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"emailnoteixst@gmail.com\",\n    \"password\": \"{{login_password}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Wrong password",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const responseData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 401\", function () {",
+													"    pm.response.to.have.status(401);",
+													"});",
+													"",
+													"pm.test(\"Response success is false\", function () {",
+													"    pm.expect(responseData).to.have.property('success', false);",
+													"});",
+													"",
+													"pm.test(\"Returns correct error message\", function () {",
+													"    pm.expect(responseData).to.have.property('message', 'Invalid email or password.'); ",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{login_email}}\",\n    \"password\": \"invalidPassword\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "/profile",
+					"item": [
+						{
+							"name": "Positive Scenarios",
+							"item": [
+								{
+									"name": "Fetch User Profile with Valid Token",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const responseData = pm.response.json();",
+													"",
+													"pm.test(\"Response indicates success\", function () {",
+													"    pm.expect(responseData.success).to.be.true;",
+													"});",
+													"",
+													"pm.test(\"User first name matches\", function () {",
+													"    pm.expect(responseData.data.firstName).to.equal(pm.environment.get(\"login_firstName\"));",
+													"});",
+													"",
+													"pm.test(\"User last name matches\", function () {",
+													"    pm.expect(responseData.data.lastName).to.equal(pm.environment.get(\"login_lastName\"));",
+													"});",
+													"",
+													"pm.test(\"User email matches\", function () {",
+													"    pm.expect(responseData.data.email).to.equal(pm.environment.get(\"login_email\"));",
+													"});",
+													"",
+													"pm.test(\"User role matches\", function () {",
+													"    pm.expect(responseData.data.role).to.equal(pm.environment.get(\"login_role\"));",
+													"});",
+													"",
+													"pm.test(\"User ID matches\", function () {",
+													"    pm.expect(responseData.data._id).to.equal(pm.environment.get(\"login_id\")); ",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{login_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/profile",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"profile"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Negative Scenarios",
+							"item": [
+								{
+									"name": "Invalid token",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const responseData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 403\", function () {",
+													"    pm.response.to.have.status(401); ",
+													"});",
+													"",
+													"pm.test(\"Response indicates failure\", function () {",
+													"    pm.expect(responseData.success).to.be.false;",
+													"});",
+													"",
+													"pm.test(\"Correct error message is returned\", function () {",
+													"    pm.expect(responseData.message).to.equal(\"Not authorized | Not found\");",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzBhNzJiNTBhMmQxMGQzYjY2MjE1MTAiLCJpYXQiOjE3Mjg3MzgxOTQsImV4cCI6MTcyOTYwMjE5NH0.ln8LNWWZY0pMZCyjs54hj6gYExBPzn_HXKXsT7q00lP",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/profile",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"profile"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

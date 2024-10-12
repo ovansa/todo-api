@@ -7,7 +7,9 @@ const sanitizeUser = (user: IUser) => {
   const sanitizedUser = user.toJSON();
 
   if (sanitizedUser.email) {
-    sanitizedUser.email = validator.normalizeEmail(sanitizedUser.email) || sanitizedUser.email;
+    sanitizedUser.email =
+      validator.normalizeEmail(sanitizedUser.email, { gmail_remove_dots: false }) ||
+      sanitizedUser.email;
   }
 
   if (sanitizedUser.firstName) {

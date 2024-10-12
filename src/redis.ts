@@ -4,32 +4,42 @@ import { config } from './config';
 import logger from './utils/logger';
 
 class RedisClient {
-  private client: Redis;
-  private redisHost: string;
-  private redisPort: number;
+  private client: Redis | null = null;
+  private redisHost: string = '';
+  private redisPort: number = 0;
 
   constructor() {
-    this.redisHost =
-      config.env === 'test' || config.env === 'development' ? '127.0.0.1' : config.redis.host;
+    if (config.isRedisEnabled == true) {
+      this.redisHost =
+        config.env === 'test' || config.env === 'development' ? '127.0.0.1' : config.redis.host;
 
-    this.redisPort =
-      config.env === 'test' || config.env === 'development' ? 6379 : config.redis.port;
-    this.client = new Redis({
-      host: this.redisHost,
-      port: this.redisPort,
-      password: config.env === 'test' || config.env === 'development' ? '' : config.redis.password,
-    });
+      this.redisPort =
+        config.env === 'test' || config.env === 'development' ? 6379 : config.redis.port;
+      this.client = new Redis({
+        host: this.redisHost,
+        port: this.redisPort,
+        password:
+          config.env === 'test' || config.env === 'development' ? '' : config.redis.password,
+      });
 
-    this.client.on('connect', () => {
-      logger.info(`Redis connected: ${this.redisHost}`);
-    });
+      this.client.on('connect', () => {
+        logger.info(`Redis connected: ${this.redisHost}`);
+      });
 
-    this.client.on('error', (err: Error) => {
-      logger.error('Redis error: ', err);
-    });
+      this.client.on('error', (err: Error) => {
+        console.log(err);
+        logger.error('Redis error: ', err);
+      });
+    } else {
+      logger.info('Redis is disabled.');
+    }
   }
 
   async set(key: string, value: string, expiration: number = 3600): Promise<void> {
+    if (!this.client) {
+      logger.warn('Redis is disabled. Skipping set operation.');
+      return;
+    }
     try {
       await this.client.set(key, value, 'EX', expiration);
     } catch (err) {
@@ -39,6 +49,10 @@ class RedisClient {
   }
 
   async get(key: string): Promise<string | null> {
+    if (!this.client) {
+      logger.warn('Redis is disabled. Skipping get operation.');
+      return null;
+    }
     try {
       return await this.client.get(key);
     } catch (err) {
@@ -48,6 +62,10 @@ class RedisClient {
   }
 
   async del(key: string): Promise<void> {
+    if (!this.client) {
+      logger.warn('Redis is disabled. Skipping delete operation.');
+      return;
+    }
     try {
       await this.client.del(key);
     } catch (err) {
@@ -57,6 +75,10 @@ class RedisClient {
   }
 
   async quit(): Promise<void> {
+    if (!this.client) {
+      logger.warn('Redis is disabled. Skipping quit operation.');
+      return;
+    }
     try {
       await this.client.quit();
       logger.info('Redis connection closed.');

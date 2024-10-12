@@ -1,0 +1,59 @@
+name: Postman - Newman Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  be_test:
+    name: Run postman tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.19.0'
+          cache: 'npm'
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: '6.0'
+
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.2.0
+        with:
+          redis-version: '7.0'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Start Application
+        run: |
+          npm run dev
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          CI: true
+
+      - name: Wait for Application to Start
+        run: |
+          echo "Waiting for the server to start..."
+          sleep 15 # Adjust the sleep duration as necessary
+
+      - name: Install Newman
+        run: npm install -D newman
+
+      - name: Run Postman Tests with Newman
+        run: newman run todo.postman_collection.json -e todo.postman_environment.json
