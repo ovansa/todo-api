@@ -42,7 +42,7 @@ jobs:
 
       - name: Start Application
         run: |
-          npm run dev
+          npm run start:dev
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           CI: true
