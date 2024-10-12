@@ -47,11 +47,6 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           CI: true
 
-      - name: Wait for Application to Start
-        run: |
-          echo "Waiting for the server to start..."
-          sleep 15 # Adjust the sleep duration as necessary
-
       - name: Install Newman
         run: npm install -D newman
 
