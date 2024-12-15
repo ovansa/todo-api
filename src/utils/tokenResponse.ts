@@ -1,13 +1,13 @@
 import { Response } from 'express';
 
-import User from '../models/user.model';
+import { IUser } from '../models/user.model';
 import { redisClient } from '../redis';
 
 import { REDIS_KEYS } from './redisKeyManager';
 import sanitizeUser from './sanitizeUser';
 
 export const sendTokenResponse = async (
-  user: InstanceType<typeof User>,
+  user: IUser,
   statusCode: number,
   res: Response,
   message?: string,
