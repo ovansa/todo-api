@@ -32,28 +32,30 @@ const UserSchema = new mongoose.Schema(
   },
 );
 
-UserSchema.pre('save', async function (next) {
-  const user = this as IUser;
-
-  if (!user.isModified('password')) return next();
+UserSchema.pre<IUser>('save', async function (next) {
+  if (!this.isModified('password')) return next();
 
   const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hashSync(user.password, salt);
-
-  user.password = hash;
-  return next();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
-UserSchema.methods.matchPassword = async function (userPassword: string): Promise<boolean> {
-  const user = this as IUser;
-
-  return bcrypt.compare(userPassword, user.password);
+UserSchema.methods.matchPassword = async function (
+  this: IUser,
+  userPassword: string,
+): Promise<boolean> {
+  return bcrypt.compare(userPassword, this.password);
 };
 
-UserSchema.methods.generateAuthToken = function (): string {
-  const user = this as IUser;
+// UserSchema.methods.matchPassword = async function (userPassword: string): Promise<boolean> {
+//   const user = this as IUser;
 
-  return jwt.sign({ _id: user._id }, process.env.JWT_SECRET || '', {
+//   return bcrypt.compare(userPassword, user.password);
+// };
+
+UserSchema.methods.generateAuthToken = function (this: IUser): string {
+
+  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET || '', {
     expiresIn: process.env.JWT_EXPIRE || '10d',
   });
 };
