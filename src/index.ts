@@ -1,8 +1,7 @@
 import 'reflect-metadata';
 
-import { connectDB, createTestData } from './db';
-
 import { Application } from 'express';
+import { connectDB } from './db';
 import { createServer } from './server';
 import logger from './utils/logger';
 import mongoose from 'mongoose';
@@ -11,12 +10,14 @@ import { redisClient } from './redis';
 const app: Application = createServer();
 let server: ReturnType<Application['listen']>;
 
+const port = process.env.PORT || 4000;
+
 const startServer = async () => {
   try {
     await connectDB();
-    await createTestData();
+    // await createTestData();
 
-    server = app.listen(3000, () => {
+    server = app.listen(port, () => {
       logger.info('🚀 Server running on http://localhost:3000');
     });
   } catch (error) {
