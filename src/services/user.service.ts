@@ -1,6 +1,6 @@
-import { Service } from 'typedi';
+import User, { IUser, UserDocument } from '../models/user.model';
 
-import User, { IUser } from '../models/user.model';
+import { Service } from 'typedi';
 
 export interface UserInput {
   firstName: string;
@@ -13,7 +13,7 @@ export interface UserInput {
 
 @Service()
 export class UserService {
-  public async addUser(values: UserInput): Promise<IUser> {
+  public async addUser(values: UserInput): Promise<UserDocument> {
     return await User.create(values);
   }
 
@@ -21,11 +21,11 @@ export class UserService {
     return User.find();
   }
 
-  public async getUserByEmail(email: string): Promise<IUser | null> {
+  public async getUserByEmail(email: string): Promise<UserDocument | null> {
     return User.findOne({ email });
   }
 
-  public async getUserById(id: string): Promise<IUser | null> {
+  public async getUserById(id: string): Promise<UserDocument | null> {
     return User.findById(id);
   }
 }

@@ -1,10 +1,8 @@
-import mongoose from 'mongoose';
-
 import User from './models/user.model';
-
 import { config } from './config';
-import logger from './utils/logger';
 import createUsersWithTodos from './scripts/createUsersWithTodos';
+import logger from './utils/logger';
+import mongoose from 'mongoose';
 
 const MONGO_DEFAULT = `mongodb://localhost:27017/todo-apis`;
 
@@ -12,9 +10,14 @@ export const connectDB = async () => {
   const MONGO_URL =
     config.env === 'test' || config.env === 'development' ? MONGO_DEFAULT : config.mongoUrl;
 
-  mongoose.Promise = Promise;
-  mongoose.connect(MONGO_URL).then(() => logger.info(`DB Connected: ${new URL(MONGO_URL).host}`));
-  mongoose.connection.on(`error`, (error: Error) => logger.error(error));
+  try {
+    mongoose.Promise = Promise;
+    await mongoose.connect(MONGO_URL);
+    logger.info(`✅ DB Connected: ${new URL(MONGO_URL).host}`);
+  } catch (error) {
+    logger.error('❌ DB Connection failed:', error);
+    process.exit(1); // Exit if DB connection fails
+  }
 };
 
 export const createTestData = async () => {

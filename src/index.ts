@@ -1,27 +1,38 @@
 import 'reflect-metadata';
-import { Application } from 'express';
-import mongoose from 'mongoose';
 
 import { connectDB, createTestData } from './db';
-import { redisClient } from './redis';
+
+import { Application } from 'express';
 import { createServer } from './server';
 import logger from './utils/logger';
+import mongoose from 'mongoose';
+import { redisClient } from './redis';
 
 const app: Application = createServer();
+let server: ReturnType<Application['listen']>;
 
-connectDB();
-createTestData();
+const startServer = async () => {
+  try {
+    await connectDB();
+    await createTestData();
 
-const server = app.listen(3000, () => {
-  logger.info('Server running on http://localhost:3000.');
-});
+    server = app.listen(3000, () => {
+      logger.info('🚀 Server running on http://localhost:3000');
+    });
+  } catch (error) {
+    logger.error('❌ Error starting server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 const shutdown = async () => {
   logger.info('Shutting down server...');
   server.close(async () => {
-    logger.info('Server closed');
     await mongoose.connection.close();
     await redisClient.quit();
+    logger.info('Server shutdown complete.');
     process.exit(0);
   });
 };

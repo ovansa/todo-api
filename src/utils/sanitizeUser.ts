@@ -1,9 +1,8 @@
+import { UserDocument } from '../models/user.model';
 import { omit } from 'lodash';
 import validator from 'validator';
 
-import { IUser } from '../models/user.model';
-
-const sanitizeUser = (user: IUser) => {
+const sanitizeUser = (user: UserDocument) => {
   const sanitizedUser = user.toJSON();
 
   if (sanitizedUser.email) {

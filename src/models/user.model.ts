@@ -1,10 +1,11 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
 import { UserRoles } from '../constants';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-export interface IUser extends mongoose.Document {
+export interface IUser {
+  _id: string;
   firstName: string;
   lastName: string;
   username?: string;
@@ -13,9 +14,14 @@ export interface IUser extends mongoose.Document {
   password: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+interface IUserMethods {
   matchPassword(enteredPassword: string): Promise<boolean>;
   generateAuthToken(): string;
 }
+
+export type UserDocument = HydratedDocument<IUser, IUserMethods>;
 
 const UserSchema = new mongoose.Schema(
   {
@@ -32,30 +38,22 @@ const UserSchema = new mongoose.Schema(
   },
 );
 
-UserSchema.pre('save', async function (next) {
-  const user = this as IUser;
-
-  if (!user.isModified('password')) return next();
+UserSchema.pre('save', async function (this: UserDocument, next) {
+  if (!this.isModified('password')) return next();
 
   const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hashSync(user.password, salt);
-
-  user.password = hash;
-  return next();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
-UserSchema.methods.matchPassword = async function (userPassword: string): Promise<boolean> {
-  const user = this as IUser;
-
-  return bcrypt.compare(userPassword, user.password);
+UserSchema.methods.matchPassword = async function (this: UserDocument, enteredPassword: string) {
+  return bcrypt.compare(enteredPassword, this.password);
 };
 
-UserSchema.methods.generateAuthToken = function (): string {
-  const user = this as IUser;
-
-  return jwt.sign({ _id: user._id }, process.env.JWT_SECRET || '', {
+UserSchema.methods.generateAuthToken = function (this: UserDocument) {
+  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET || '', {
     expiresIn: process.env.JWT_EXPIRE || '10d',
   });
 };
 
-export default mongoose.model<IUser>('User', UserSchema);
+export default mongoose.model<UserDocument>('User', UserSchema);
